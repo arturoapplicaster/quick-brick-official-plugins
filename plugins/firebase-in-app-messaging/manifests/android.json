@@ -1,0 +1,34 @@
+{
+  "api": {},
+  "dependency_repository_url": [],
+  "dependency_name": "@applicaster/quick-brick-firebase-in-app-messaging",
+  "author_name": "Alex Khomich",
+  "author_email": "a.khomich@applicaster.com",
+  "name": "Firebase In-App Messaging",
+  "description": "",
+  "type": "general",
+  "react_native": true,
+  "identifier": "quick-brick-firebase-in-app-messaging",
+  "ui_builder_support": true,
+  "whitelisted_account_ids": [],
+  "deprecated_since_zapp_sdk": "",
+  "unsupported_since_zapp_sdk": "",
+  "preload": true,
+  "platform": "android",
+  "dependency_version": "0.0.1",
+  "manifest_version": "0.0.1",
+  "min_zapp_sdk": "",
+  "general": {},
+  "project_dependencies": [
+    {
+      
+    }
+  ],
+  "custom_configuration_fields": [],
+  "ui_frameworks": [
+    "quickbrick"
+  ],
+  "targets": [
+    "mobile"
+  ]
+}
