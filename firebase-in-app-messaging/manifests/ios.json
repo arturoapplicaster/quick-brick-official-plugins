@@ -1,0 +1,26 @@
+{
+    "api": {},
+    "author_name": "Roman Karpievich",
+    "author_email": "karpievich@applicaster.com",
+    "manifest_version": "0.0.1",
+    "platform": "ios",
+    "name": "Firebase In-App Messaging",
+    "description": "This plugin adds firebase in-app messaging dependency to your native project",
+    "identifier": "firebase-in-app-messaging",
+  
+    "extra_dependencies": [
+      {
+        "Firebase": "",
+        "Firebase/InAppMessaging": "",
+        "Firebase/Analytics": ""
+      }
+    ],
+    "type": "general",
+    "min_zapp_sdk": "0.0.1",
+    "react_native": true,
+    "ui_builder_support": true,
+    "targets": ["mobile"],
+    "whitelisted_account_ids": ["5e132c906663330008c0f8ab"],
+    "custom_configuration_fields": []
+  }
+  
