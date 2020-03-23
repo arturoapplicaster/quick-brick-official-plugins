@@ -8,12 +8,11 @@
   "description": "",
   "type": "general",
   "react_native": true,
-  "identifier": "quick-brick-firebase-in-app-messaging",
+  "identifier": "firebase-in-app-messaging",
   "ui_builder_support": true,
   "whitelisted_account_ids": [],
   "deprecated_since_zapp_sdk": "",
   "unsupported_since_zapp_sdk": "",
-  "preload": true,
   "platform": "android",
   "dependency_version": "0.0.1",
   "manifest_version": "0.0.1",
@@ -21,7 +20,7 @@
   "general": {},
   "project_dependencies": [
     {
-      
+       "firebase-in-app-messaging": "node_modules/@applicaster/quick-brick-firebase-in-app-messaging/android"
     }
   ],
   "custom_configuration_fields": [],
