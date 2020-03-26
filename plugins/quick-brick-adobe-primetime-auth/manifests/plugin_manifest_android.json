@@ -1,0 +1,138 @@
+{
+  "api": {
+    "require_startup_execution": false,
+    "class_name": "com.applicaster.adobe.login.AdobePassPackage",
+    "react_packages": [
+      "com.applicaster.adobe.login.AdobePassPackage"
+    ]
+  },
+  "dependency_repository_url": [],
+  "platform": "android",
+  "author_name": "Denis Razumeev",
+  "author_email": "d.razumeev@applicaster.com",
+  "name": "Adobe Primetime Authentication QuickBrick",
+  "description": "Cable Operator Authentication using Adobe Pass Authentication",
+  "type": "general",
+  "ui_builder_support": true,
+  "screen": true,
+  "react_native": true,
+  "identifier": "adobe-primetime-auth-qb",
+  "dependency_name": "@applicaster/quick-brick-adobe-primetime-auth",
+  "whitelisted_account_ids": [],
+  "preload": true,
+  "dependency_version": "0.0.1",
+  "manifest_version": "0.0.1",
+  "min_zapp_sdk": "12.0.0",
+  "general": {
+    "fields": [
+      {
+        "type": "text",
+        "key": "base_url",
+        "tooltip_text": "The base url for the requestor",
+        "default": "sp.auth.adobe.com"
+      },
+      {
+        "type": "text",
+        "key": "token_validation_url",
+        "tooltip_text": "The token validation endpoint to be used to confirm the validity of our token.",
+        "default": "http://sp.auth.adobe.com/tvs/v1/validate"
+      },
+      {
+        "type": "text",
+        "key": "software_statement",
+        "tooltip_text": "The software statement required to configure the Adobe Primetime correctly"
+      },
+      {
+        "type": "text",
+        "key": "requestor_id",
+        "tooltip_text": "The Requestor ID to be configured per client"
+      },
+      {
+        "type": "text",
+        "key": "resource_id",
+        "tooltip_text": "The Resource ID to be configured per client"
+      },
+      {
+        "type": "text",
+        "key": "redirect_uri",
+        "tooltip_text": "The Resource URI to be configured per client"
+      },
+      {
+        "type": "colorpicker",
+        "key": "login_navbar_background_color",
+        "tooltip_text": "Login screen top navigation background color",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "colorpicker",
+        "key": "login_navbar_title_color",
+        "tooltip_text": "Login screen top navigation title color",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "text",
+        "key": "login_navbar_title",
+        "tooltip_text": "Login screen top navigation title",
+        "default": "Login"
+      },
+      {
+        "type": "text",
+        "key": "login_loading_message",
+        "tooltip_text": "Login loading message displayed to the user when doing authentication tasks in the background",
+        "default": "Loading..."
+      },
+      {
+        "type": "text",
+        "key": "logout_dialog_title",
+        "tooltip_text": "Title of the logout dialog",
+        "default": "Logout"
+      },
+      {
+        "type": "text",
+        "key": "logout_dialog_message",
+        "tooltip_text": "Message of the logout dialog",
+        "default": "Are you sure you want to logout?"
+      },
+      {
+        "type": "text",
+        "key": "logout_dialog_positive_button_text",
+        "tooltip_text": "Text for the positive (ok) button inside the logout dialog",
+        "default": "Ok"
+      },
+      {
+        "type": "text",
+        "key": "logout_dialog_negative_button_text",
+        "tooltip_text": "Text for the negative (cancel) button inside the logout dialog",
+        "default": "Cancel"
+      }
+    ]
+  },
+  "project_dependencies": [
+    {
+      "quick-brick-adobe-primetime-auth": "quick_brick/node_modules/@applicaster/quick-brick-adobe-primetime-auth/android"
+    }
+  ],
+  "custom_configuration_fields": [],
+  "hooks": {
+    "fields": [
+      {
+        "group": true,
+        "label": "Before Load",
+        "folded": true,
+        "fields": [
+          {
+            "key": "preload_plugins",
+            "type": "preload_plugins_selector",
+            "label": "Select Plugins"
+          }
+        ]
+      }
+    ]
+  },
+  "ui_frameworks": [
+    "quickbrick"
+  ],
+  "targets": [
+    "mobile"
+  ]
+}
