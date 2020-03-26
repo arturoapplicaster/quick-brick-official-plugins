@@ -7,7 +7,7 @@
 //
 @import React;
 #import <React/RCTEventEmitter.h>
-@interface RCT_EXTERN_MODULE(AdobeAccessEnabler, RCTEventEmitter)
+@interface RCT_EXTERN_REMAP_MODULE(AdobePassContract, AdobeAccessEnabler, RCTEventEmitter)
 
 RCT_EXTERN_METHOD(setupAccessEnabler:(NSDictionary*) pluginConfig)
 RCT_EXTERN_METHOD(setProviderID:(NSString*) providerID)

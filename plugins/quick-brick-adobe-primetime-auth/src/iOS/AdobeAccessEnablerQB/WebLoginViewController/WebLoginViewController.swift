@@ -15,21 +15,24 @@ class WebLoginViewController: UIViewController, WKNavigationDelegate {
     var webView = WKWebView()
     let adobePassWebURL = "adobepass://ios.app"
     var accessEnabler: AccessEnabler?
-    var cancelAction: (() -> ())?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func loadView() {
+        super.loadView()
         self.view.addSubview(webView)
         webView.navigationDelegate = self
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor).isActive = true
         webView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         webView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        webView.trailingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        webView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
     
     @IBAction func cancel(_ sender: Any) {
-        cancelAction?()
+        accessEnabler?.setSelectedProvider(nil)
     }
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: ((WKNavigationActionPolicy) -> Void)) {

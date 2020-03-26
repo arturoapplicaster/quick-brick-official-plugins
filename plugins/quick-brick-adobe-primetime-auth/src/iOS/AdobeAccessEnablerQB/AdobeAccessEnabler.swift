@@ -61,14 +61,14 @@ class AdobeAccessEnabler: RCTEventEmitter, EntitlementDelegate, EntitlementStatu
                     self.accessEnabler.getAuthorization(stringForAuthorization)
                 }
             } else {
-                authCompletion?(["failed"])
+                finishLoginFlow(false)//authCompletion?(["failed"])
             }
         } else {
             self.userAuthenticated = false
             if code == PROVIDER_NOT_SELECTED_ERROR {
-                authCompletion?(["canceled"])
+                finishLoginFlow(false)//(["canceled"])
             } else {
-                authCompletion?(["failed"])
+                finishLoginFlow(false)//(["failed"])
             }
             authCompletion = nil
         }
@@ -82,8 +82,7 @@ class AdobeAccessEnabler: RCTEventEmitter, EntitlementDelegate, EntitlementStatu
             self.authorizedResourceIDs.append(resource)
         }
         if self.authCompletion != nil, self.userAuthenticated {
-            self.authCompletion?(["success"])
-            self.authCompletion = nil
+            finishLoginFlow(true) //self.authCompletion?(["success"])
         }
     }
     
@@ -95,7 +94,15 @@ class AdobeAccessEnabler: RCTEventEmitter, EntitlementDelegate, EntitlementStatu
     
     func tokenRequestFailed(_ resource: String!, errorCode code: String!, errorDescription description: String!) {
         userAuthenticated = false
-        authCompletion?(["failed"])
+        if self.authCompletion != nil {
+            let message = "This content is not included in your package"
+            let okText = "OK"
+            let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: okText, style: .default, handler: { _ in
+                self.finishLoginFlow(false) //["failed"])
+            }))
+            webLoginViewController?.present(alert, animated: true, completion: nil)
+        }
     }
     
     func displayProviderDialog(_ mvpds: [Any]!) {
@@ -109,6 +116,7 @@ class AdobeAccessEnabler: RCTEventEmitter, EntitlementDelegate, EntitlementStatu
         let topViewController = UIViewController.topmostViewController()
         webLoginViewController = WebLoginViewController.instantiateVC()
         webLoginViewController?.accessEnabler = accessEnabler
+        webLoginViewController?.modalPresentationStyle = .fullScreen
         guard let webLoginViewController = webLoginViewController else {
             return
         }
@@ -116,6 +124,14 @@ class AdobeAccessEnabler: RCTEventEmitter, EntitlementDelegate, EntitlementStatu
             guard let url = URL(string: url) else {return}
             webLoginViewController.webView.load(URLRequest(url: url))
         })
+    }
+    
+    func finishLoginFlow(_ result: Bool) {
+        webLoginViewController?.dismiss(animated: true, completion: {
+            self.webLoginViewController = nil
+        })
+        authCompletion?([NSNull(), ["success": result]])
+        self.authCompletion = nil
     }
     
     //MARK:- Unused Delegate methods
