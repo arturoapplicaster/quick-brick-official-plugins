@@ -26,84 +26,176 @@
   "general": {
     "fields": [
       {
-        "type": "text",
+        "type": "text_input",
         "key": "base_url",
-        "tooltip_text": "The base url for the requestor",
+        "label": "Base URL",
+        "label_tooltip": "The base url for the requestor",
+        "placeholder": "sp.auth.adobe.com",
         "default": "sp.auth.adobe.com"
       },
       {
-        "type": "text",
+        "type": "text_input",
         "key": "token_validation_url",
-        "tooltip_text": "The token validation endpoint to be used to confirm the validity of our token.",
+        "label": "Token Validation URL",
+        "label_tooltip": "The token validation endpoint to be used to confirm the validity of our token.",
+        "placeholder": "http://sp.auth.adobe.com/tvs/v1/validate",
         "default": "http://sp.auth.adobe.com/tvs/v1/validate"
       },
       {
-        "type": "text",
+        "type": "text_input",
         "key": "software_statement",
-        "tooltip_text": "The software statement required to configure the Adobe Primetime correctly"
+        "label": "Software Statement",
+        "label_tooltip": "The software statement required to configure the Adobe Primetime correctly"
       },
       {
-        "type": "text",
+        "type": "text_input",
         "key": "requestor_id",
-        "tooltip_text": "The Requestor ID to be configured per client"
+        "label": "Requestor ID",
+        "label_tooltip": "The Requestor ID to be configured per client"
       },
       {
-        "type": "text",
+        "type": "text_input",
         "key": "resource_id",
-        "tooltip_text": "The Resource ID to be configured per client"
+        "label": "Resource ID",
+        "label_tooltip": "The Resource ID to be configured per client"
       },
       {
-        "type": "text",
+        "type": "text_input",
         "key": "redirect_uri",
-        "tooltip_text": "The Resource URI to be configured per client"
+        "label": "Redirect URI",
+        "label_tooltip": "Redirect URI"
       },
       {
-        "type": "colorpicker",
-        "key": "login_navbar_background_color",
-        "tooltip_text": "Login screen top navigation background color",
-        "default": "#FFFFFF"
-      },
-      {
-        "type": "colorpicker",
-        "key": "login_navbar_title_color",
-        "tooltip_text": "Login screen top navigation title color",
-        "default": "#FFFFFF"
-      },
-      {
-        "type": "text",
-        "key": "login_navbar_title",
-        "tooltip_text": "Login screen top navigation title",
-        "default": "Login"
-      },
-      {
-        "type": "text",
-        "key": "login_loading_message",
-        "tooltip_text": "Login loading message displayed to the user when doing authentication tasks in the background",
-        "default": "Loading..."
-      },
-      {
-        "type": "text",
-        "key": "logout_dialog_title",
-        "tooltip_text": "Title of the logout dialog",
-        "default": "Logout"
-      },
-      {
-        "type": "text",
-        "key": "logout_dialog_message",
-        "tooltip_text": "Message of the logout dialog",
-        "default": "Are you sure you want to logout?"
-      },
-      {
-        "type": "text",
-        "key": "logout_dialog_positive_button_text",
-        "tooltip_text": "Text for the positive (ok) button inside the logout dialog",
-        "default": "Ok"
-      },
-      {
-        "type": "text",
-        "key": "logout_dialog_negative_button_text",
-        "tooltip_text": "Text for the negative (cancel) button inside the logout dialog",
-        "default": "Cancel"
+        "group": true,
+        "label": "Screen Design and Text",
+        "tooltip": "These fields affect the design of the main screen plugin.",
+        "folded": true,
+        "fields": [
+          {
+            "type": "color_picker_rgba",
+            "key": "login_navbar_background_color",
+            "label_tooltip": "Login screen top navigation background color",
+            "default": "#FFFFFF"
+          },
+          {
+            "type": "text_input",
+            "key": "login_navbar_title",
+            "label": "Login Navigation Title Text",
+            "label_tooltip": "Login screen top navigation title",
+            "placeholder": "Login",
+            "default": "Login"
+          },
+          {
+            "type": "color_picker_rgba",
+            "key": "login_navbar_title_color",
+            "label_tooltip": "Login screen top navigation title color",
+            "default": "#FFFFFF"
+          },
+          {
+            "type": "color_picker_rgba",
+            "key": "header_color",
+            "label": "Header Color",
+            "label_tooltip": "Color for the header which contains the title and instructions texts.",
+            "default": "rgb(45, 45, 52)"
+          },
+          {
+            "type": "color_picker_rgba",
+            "key": "list_background_color",
+            "label": "List Background Color",
+            "label_tooltip": "Background color for the MVPD List Screen.",
+            "default": "rgb(228, 223, 223)"
+          },
+          {
+            "type": "color_picker_rgba",
+            "key": "list_separator_color",
+            "label": "List Separator Color",
+            "label_tooltip": "Color for the item list separator.",
+            "default": "rgb(151, 151, 151)"
+          },
+          {
+            "type": "text_input",
+            "key": "title_text",
+            "label": "Title Text",
+            "label_tooltip": "Text at the top of the screen. Briefly introduces the purpose of the plugin (22 characters max).",
+            "default": "Choose Your Provider",
+            "placeholder": "Choose Your Provider"
+          },
+          {
+            "type": "number_input",
+            "key": "title_text_fontsize",
+            "label": "Title Text Fontsize",
+            "label_tooltip": "Fontsize for title Text.",
+            "default": "28"
+          },
+          {
+            "type": "color_picker_rgba",
+            "key": "title_text_color",
+            "label": "Title Text Color",
+            "label_tooltip": "Color for title Text.",
+            "default": "rgb(255, 255, 255)"
+          },
+          {
+            "type": "text_input",
+            "key": "instructions_text",
+            "label": "Instructions Text",
+            "label_tooltip": "Text to give specific instructions to the user, about the use of the plugin. (90 characters max)",
+            "default": "Select your cable provider and sign in(have your username and password handy)",
+            "placeholder": "Select your cable provider and sign in(have your username and password handy)"
+          },
+          {
+            "type": "number_input",
+            "key": "instructions_text_fontsize",
+            "label": "Instructions Text Fontsize",
+            "label_tooltip": "Fontsize for instructions Text.",
+            "default": "13"
+          },
+          {
+            "type": "color_picker_rgba",
+            "key": "instructions_text_color",
+            "label": "Instructions Text Color",
+            "label_tooltip": "Color for instructions Text.",
+            "default": "rgb(255, 255, 255)"
+          },
+          {
+            "type": "number_input",
+            "key": "list_item_fontsize",
+            "label": "MVPD List Item Fontsize",
+            "label_tooltip": "Fontsize for the MVPD’s names.",
+            "default": "21"
+          },
+          {
+            "type": "color_picker_rgba",
+            "key": "list_item_color",
+            "label": "MVPD List Item Color",
+            "label_tooltip": "Color for the MVPD’s names.",
+            "default": "rgb(0, 0, 0)"
+          },
+          {
+            "type": "text_input",
+            "key": "logout_dialog_title",
+            "label_tooltip": "Title of the logout dialog",
+            "default": "Logout"
+          },
+          {
+            "type": "text_input",
+            "key": "logout_dialog_message_text",
+            "label": "Logout Dialog Message Text",
+            "label_tooltip": "Text to double check the decision made by the user.",
+            "default": "Are you sure you want to sign out?"
+          },
+          {
+            "type": "text_input",
+            "key": "logout_dialog_positive_button_text",
+            "label_tooltip": "Text for the positive (ok) button inside the logout dialog",
+            "default": "Ok"
+          },
+          {
+            "type": "text_input",
+            "key": "logout_dialog_negative_button_text",
+            "label_tooltip": "Text for the negative (cancel) button inside the logout dialog",
+            "default": "Cancel"
+          }
+        ]
       }
     ]
   },
