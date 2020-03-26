@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_5" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Web Login View Controller-->
+        <scene sceneID="Cf9-k5-ems">
+            <objects>
+                <viewController storyboardIdentifier="WebLoginViewController" id="QPT-Pr-jUc" customClass="WebLoginViewController" customModule="AdobeAccessEnablerQB" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Zis-07-cie">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PGo-wW-HZZ">
+                                <rect key="frame" x="0.0" y="44" width="414" height="50"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3di-U5-TAo">
+                                        <rect key="frame" x="358" y="10" width="48" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="30" id="jga-Jb-sPF"/>
+                                        </constraints>
+                                        <state key="normal" title="Cancel"/>
+                                        <connections>
+                                            <action selector="cancel:" destination="QPT-Pr-jUc" eventType="touchUpInside" id="dgO-Yw-dbk"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="3di-U5-TAo" secondAttribute="bottom" constant="10" id="BTP-G0-var"/>
+                                    <constraint firstAttribute="trailing" secondItem="3di-U5-TAo" secondAttribute="trailing" constant="8" id="bGP-Ip-lOf"/>
+                                    <constraint firstAttribute="height" constant="50" id="tqA-IN-hZM"/>
+                                    <constraint firstItem="3di-U5-TAo" firstAttribute="top" secondItem="PGo-wW-HZZ" secondAttribute="top" constant="10" id="zcT-ac-dRs"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="PGo-wW-HZZ" firstAttribute="leading" secondItem="TOa-Ar-3vR" secondAttribute="leading" id="1yP-iT-OBo"/>
+                            <constraint firstItem="PGo-wW-HZZ" firstAttribute="top" secondItem="TOa-Ar-3vR" secondAttribute="top" id="jYI-rk-K7c"/>
+                            <constraint firstItem="PGo-wW-HZZ" firstAttribute="trailing" secondItem="TOa-Ar-3vR" secondAttribute="trailing" id="quA-Wj-puC"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="TOa-Ar-3vR"/>
+                    </view>
+                    <connections>
+                        <outlet property="navigationBar" destination="PGo-wW-HZZ" id="pUz-HM-vGC"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IcL-AB-sus" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-20.289855072463769" y="144.64285714285714"/>
+        </scene>
+    </scenes>
+</document>

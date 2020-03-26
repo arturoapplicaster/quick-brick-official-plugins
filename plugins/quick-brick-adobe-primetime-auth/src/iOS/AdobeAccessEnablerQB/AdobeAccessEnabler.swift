@@ -12,20 +12,18 @@ import AccessEnabler
 @objc(AdobeAccessEnabler)
 class AdobeAccessEnabler: RCTEventEmitter, EntitlementDelegate, EntitlementStatus {
     static let shared = AdobeAccessEnabler()
+    var webLoginViewController: WebLoginViewController?
     var additionalParameters: [String: Any]?
-    var playableItemId: String?
     var accessEnabler = AccessEnabler()
     var resourceID: String?
     // User authenticated in adobe access enabler
     var userAuthenticated = false
-    // Selected tv provider - Can be used to get metadata to display in app
-    public var selectedMVPD: MVPD?
     // Tokens dictionary - keys are the resource IDs
     var tokensDictionary: [String:String] = [:]
     // Authorized resource
     var authorizedResourceIDs: [String] = []
     // Authorization flow completion
-    var authCallback: RCTResponseSenderBlock?
+    var authCompletion: RCTResponseSenderBlock?
     
     @objc func setupAccessEnabler(_ pluginConfig: [String: String]) {
        accessEnabler = AccessEnabler(pluginConfig["software_statement"] ?? "")
@@ -40,21 +38,14 @@ class AdobeAccessEnabler: RCTEventEmitter, EntitlementDelegate, EntitlementStatu
     }
     
     @objc func startLoginFlow(_ additionalParameters: [String: Any], callback: @escaping RCTResponseSenderBlock) {
-        authCallback = callback
+        self.authCompletion = callback
+        self.additionalParameters = additionalParameters
         if self.userAuthenticated {
             if let stringForAuthorization = getResourceStringForAuthorization() {
                 self.accessEnabler.getAuthorization(stringForAuthorization)
             }
         } else {
-            if self.userAuthenticated,
-                let resourceID = self.resourceID,
-                self.authorizedResourceIDs.contains(resourceID) == false {
-                if let stringForAuthorization = getResourceStringForAuthorization() {
-                    self.accessEnabler.getAuthorization(stringForAuthorization)
-                }
-            } else {
-                self.accessEnabler.getAuthentication()
-            }
+            self.accessEnabler.getAuthentication()
         }
     }
     
@@ -65,74 +56,46 @@ class AdobeAccessEnabler: RCTEventEmitter, EntitlementDelegate, EntitlementStatu
     func setAuthenticationStatus(_ status: Int32, errorCode code: String!) {
         if status == ACCESS_ENABLER_STATUS_SUCCESS {
             self.userAuthenticated = true
-            if let _ = self.resourceID {
+            if self.resourceID != nil {
                 if let stringForAuthorization = getResourceStringForAuthorization() {
                     self.accessEnabler.getAuthorization(stringForAuthorization)
                 }
             } else {
-                guard let authCallback = authCallback else {
-                    return
-                }
-                authCallback(["failed"])
+                authCompletion?(["failed"])
             }
         } else {
             self.userAuthenticated = false
             if code == PROVIDER_NOT_SELECTED_ERROR {
-                guard let authCallback = authCallback else {
-                    return
-                }
-                authCallback(["canceled"])
+                authCompletion?(["canceled"])
             } else {
-                guard let authCallback = authCallback else {
-                    return
-                }
-                authCallback(["failed"])
+                authCompletion?(["failed"])
             }
-            authCallback = nil
+            authCompletion = nil
         }
     }
     
     func setToken(_ token: String!, forResource resource: String!) {
-//        guard let playableItemId = self.playableItemId else { return }
-//        if let token = token,
-//            let resource = resource {
-//            self.tokensDictionary[playableItemId] = token
-//            self.authorizedResourceIDs.append(resource)
-//        }
-//
-//        if let _ = self.authorizationCompletion,
-//            self.userAuthenticated {
-//
-//            if let loadingViewController = self.loadingViewController  {
-//                loadingViewController.dismissModalViewControllerFromParent(animated: true,
-//                                                                                 completionHandler: {
-//                                                                                    self.authorizationCompletion?(.completedSuccessfully)
-//                                                                                    self.authorizationCompletion = nil
-//                })
-//            } else  {
-//                self.authorizationCompletion?(.completedSuccessfully)
-//                self.authorizationCompletion = nil
-//            }
-//            self.loadingViewController = nil
-//        }
+        guard let itemID = additionalParameters?["itemID"] as? String else { return }
+        if let token = token,
+            let resource = resource {
+            self.tokensDictionary[itemID] = token
+            self.authorizedResourceIDs.append(resource)
+        }
+        if self.authCompletion != nil, self.userAuthenticated {
+            self.authCompletion?(["success"])
+            self.authCompletion = nil
+        }
     }
     
     func preauthorizedResources(_ resources: [Any]!) {
         if let resourceStringsArray = resources as? [String] {
-            self.authorizedResourceIDs.append(contentsOf: resourceStringsArray)
+            authorizedResourceIDs.append(contentsOf: resourceStringsArray)
         }
     }
     
     func tokenRequestFailed(_ resource: String!, errorCode code: String!, errorDescription description: String!) {
-        self.userAuthenticated = false
-        guard let authCallback = authCallback else {
-            return
-        }
-        authCallback(["failed"])
-    }
-    
-    func selectedProvider(_ mvpd: MVPD!) {
-        //empty ?
+        userAuthenticated = false
+        authCompletion?(["failed"])
     }
     
     func displayProviderDialog(_ mvpds: [Any]!) {
@@ -140,6 +103,29 @@ class AdobeAccessEnabler: RCTEventEmitter, EntitlementDelegate, EntitlementStatu
             return
         }
         sendEvent(withName: "showProvidersList", body: providers.toJSONObjects())
+    }
+    
+    func navigate(toUrl url: String!) {
+        let topViewController = UIViewController.topmostViewController()
+        webLoginViewController = WebLoginViewController.instantiateVC()
+        webLoginViewController?.accessEnabler = accessEnabler
+        guard let webLoginViewController = webLoginViewController else {
+            return
+        }
+        topViewController?.present(webLoginViewController, animated: true, completion: {
+            guard let url = URL(string: url) else {return}
+            webLoginViewController.webView.load(URLRequest(url: url))
+        })
+    }
+    
+    //MARK:- Unused Delegate methods
+    
+    func setRequestorComplete(_ status: Int32) {
+        //empty
+    }
+    
+    func selectedProvider(_ mvpd: MVPD!) {
+        //empty
     }
     
     func sendTrackingData(_ data: [Any]!, forEventType event: Int32) {
@@ -150,35 +136,30 @@ class AdobeAccessEnabler: RCTEventEmitter, EntitlementDelegate, EntitlementStatu
         //empty
     }
     
-    func navigate(toUrl url: String!) {
-        //Somehow send to JS
-    }
-    
     func presentTvProviderDialog(_ viewController: UIViewController!) {
-        //empty ?
+        //empty
     }
     
     func dismissTvProviderDialog(_ viewController: UIViewController!) {
-        //empty ?
+        //empty
     }
     
     func status(_ statusDictionary: [AnyHashable : Any]!) {
         //empty
     }
     
-    func setRequestorComplete(_ status: Int32) {
-        //empty
+    //MARK:- helper method to get resourceId string
+    private func getResourceStringForAuthorization() -> String? {
+        guard let resourceID = self.resourceID,
+              let itemID = additionalParameters?["itemID"] as? String,
+              let itemTitle = additionalParameters?["itemTitle"] as? String
+            else {
+            return nil
+        }
+        return "<rss version=\"2.0\" xmlns:media=\"http://search.yahoo.com/mrss/\"><channel><title>\(resourceID)</title><item><title>\(itemTitle)</title><guid>\(itemID)</guid></item></channel></rss>"
     }
     
-    //MARK: helper method to get resourceId string
-    private func getResourceStringForAuthorization() -> String? {
-//        guard let resourceID = self.resourceID, let additionalParameters = self.additionalParameters else { return nil }
-//        guard let playableItems = additionalParameters["playable_items"] as? [ZPPlayable], let itemToAuthorize = playableItems.first else { return nil }
-//        guard let analyticsParams = itemToAuthorize.analyticsParams(), let itemId = analyticsParams["Item ID"] as? String, let itemTitle = itemToAuthorize.playableName() else { return nil }
-//        self.playableItemId = itemId
-        
-        return "<rss version=\"2.0\" xmlns:media=\"http://search.yahoo.com/mrss/\"><channel><title>\(resourceID)</title><item><title></title><guid></guid></item></channel></rss>"
-    }
+    //MARK:- React native support
     
     override open var methodQueue: DispatchQueue {
         return DispatchQueue.main
@@ -190,18 +171,5 @@ class AdobeAccessEnabler: RCTEventEmitter, EntitlementDelegate, EntitlementStatu
     
     override func supportedEvents() -> [String]! {
       return ["showProvidersList"]
-    }
-}
-
-extension MVPD {
-    func toJSON() -> [String: String] {
-        return ["id" : self.id ?? "",
-                "title" : self.displayName ?? "",
-                "logoURL" : self.logoURL ?? ""]
-    }
-}
-extension Array where Element:MVPD {
-    func toJSONObjects() -> [[String: String]] {
-        return self.compactMap{$0.toJSON()}
     }
 }

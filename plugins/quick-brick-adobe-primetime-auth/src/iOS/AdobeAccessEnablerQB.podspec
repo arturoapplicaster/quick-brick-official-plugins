@@ -9,6 +9,7 @@ Pod::Spec.new do |s|
   s.swift_version = '5.1'
   s.source       = { :git => "https://github.com/applicaster/zapp-login-plugin-cleeng", :tag => 'ios-' + s.version.to_s }
   s.source_files = 'AdobeAccessEnablerQB/**/*.{swift,h,m}'
+  s.resources = 'AdobeAccessEnablerQB/**/*.{xib,nib,storyboard}'
   s.requires_arc = true
   s.static_framework = true
   s.dependency 'AccessEnabler'
