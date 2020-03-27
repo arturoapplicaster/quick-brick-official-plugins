@@ -1,0 +1,106 @@
+{
+  "api": {
+    "require_startup_execution": false,
+    "class_name": "com.applicaster.adobe.login.AdobePassLoginContract"
+  },
+  "dependency_repository_url": [],
+  "platform": "android",
+  "author_name": "Denis Razumeev",
+  "author_email": "d.razumeev@applicaster.com",
+  "manifest_version": "0.1.0",
+  "name": "Adobe Pass Authentication",
+  "description": "Cable Operator Authentication using Adobe Pass Authentication",
+  "type": "login",
+  "ui_builder_support": true,
+  "identifier": "adobe_pass_auth",
+  "dependency_name": "com.applicaster:AdobePrimetimeAuthentication-Android",
+  "dependency_version": "0.1.0",
+  "whitelisted_account_ids": [],
+  "min_zapp_sdk": "12.0.0",
+  "react_native": false,
+  "custom_configuration_fields": [
+    {
+      "type": "text",
+      "key": "base_url",
+      "tooltip_text": "The base url for the requestor",
+      "default": "sp.auth.adobe.com"
+    },
+    {
+      "type": "text",
+      "key": "token_validation_url",
+      "tooltip_text": "The token validation endpoint to be used to confirm the validity of our token.",
+      "default": "http://sp.auth.adobe.com/tvs/v1/validate"
+    },
+    {
+      "type": "text",
+      "key": "software_statement",
+      "tooltip_text": "The software statement required to configure the Adobe Primetime correctly"
+    },
+    {
+      "type": "text",
+      "key": "requestor_id",
+      "tooltip_text": "The Requestor ID to be configured per client"
+    },
+    {
+      "type": "text",
+      "key": "resource_id",
+      "tooltip_text": "The Resource ID to be configured per client"
+    },
+    {
+      "type": "text",
+      "key": "redirect_uri",
+      "tooltip_text": "The Resource URI to be configured per client"
+    },
+    {
+      "type": "colorpicker",
+      "key": "login_navbar_background_color",
+      "tooltip_text": "Login screen top navigation background color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "colorpicker",
+      "key": "login_navbar_title_color",
+      "tooltip_text": "Login screen top navigation title color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "text",
+      "key": "login_navbar_title",
+      "tooltip_text": "Login screen top navigation title",
+      "default": "Login"
+    },
+    {
+      "type": "text",
+      "key": "login_loading_message",
+      "tooltip_text": "Login loading message displayed to the user when doing authentication tasks in the background",
+      "default": "Loading..."
+    },
+    {
+      "type": "text",
+      "key": "logout_dialog_title",
+      "tooltip_text": "Title of the logout dialog",
+      "default": "Logout"
+    },
+    {
+      "type": "text",
+      "key": "logout_dialog_message",
+      "tooltip_text": "Message of the logout dialog",
+      "default": "Are you sure you want to logout?"
+    },
+    {
+      "type": "text",
+      "key": "logout_dialog_positive_button_text",
+      "tooltip_text": "Text for the positive (ok) button inside the logout dialog",
+      "default": "Ok"
+    },
+    {
+      "type": "text",
+      "key": "logout_dialog_negative_button_text",
+      "tooltip_text": "Text for the negative (cancel) button inside the logout dialog",
+      "default": "Cancel"
+    }
+  ],
+  "targets": [
+    "mobile"
+  ]
+}
