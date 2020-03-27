@@ -9,9 +9,9 @@ import React
 import Foundation
 import AccessEnabler
 
-@objc(AdobeAccessEnabler)
-class AdobeAccessEnabler: RCTEventEmitter, EntitlementDelegate, EntitlementStatus {
-    static let shared = AdobeAccessEnabler()
+@objc(AdobePrimetimeAuthProvider)
+class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, EntitlementStatus {
+    static let shared = AdobePrimetimeAuthProvider()
     var webLoginViewController: WebLoginViewController?
     var additionalParameters: [String: Any]?
     var accessEnabler = AccessEnabler()
