@@ -11,7 +11,7 @@
         <!--Web Login View Controller-->
         <scene sceneID="Cf9-k5-ems">
             <objects>
-                <viewController storyboardIdentifier="WebLoginViewController" id="QPT-Pr-jUc" customClass="WebLoginViewController" customModule="AdobeAccessEnablerQB" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WebLoginViewController" id="QPT-Pr-jUc" customClass="WebLoginViewController" customModule="AdobePrimetimeAuthQB" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Zis-07-cie">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
