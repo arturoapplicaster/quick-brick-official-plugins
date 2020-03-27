@@ -6,7 +6,7 @@ import CloseButton from './CloseButton';
 
 export default function NavbarComponent({ closeHook }) {
   const {
-    customStyle: {headerColor},
+    customStyle: { headerColor },
     titleTextStyle,
     instructionsTextStyle,
     customText: {
@@ -20,14 +20,14 @@ export default function NavbarComponent({ closeHook }) {
       <CloseButton closeHook={closeHook} label="X"/>
       <View style={styles.container}>
         <Text
-          style={{ ...titleTextStyle, ...styles.title }}
+          style={[titleTextStyle, styles.title]}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
           {titleText}
         </Text>
         <Text
-          style={{ ...instructionsTextStyle, ...styles.instructions }}
+          style={[instructionsTextStyle, styles.instructions]}
           numberOfLines={2}
           ellipsizeMode="tail"
         >

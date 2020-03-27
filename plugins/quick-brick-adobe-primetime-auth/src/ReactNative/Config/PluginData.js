@@ -3,9 +3,6 @@ import { getPluginData } from '../Utils';
 
 export function getCustomPluginData(screenData) {
   const {
-    login_navbar_background_color: navigationBarBackgroundColor,
-    login_navbar_title_color: navigationBarTitleColor,
-    login_navbar_title: navigationBarTitle,
     header_color: headerColor,
     list_background_color: listBackgroundColor,
     list_separator_color: listSeparatorColor,
@@ -17,13 +14,7 @@ export function getCustomPluginData(screenData) {
     instructions_text_color: instructionsTextColor,
     list_item_fontsize: listItemFontsize,
     list_item_color: listItemColor,
-    logout_dialog_message_text: logoutDialogMessageText,
-    base_url: baseUrl,
-    software_statement: softwareStatement,
-    requestor_id: requestorId,
-    resource_id: resourceId,
-    url_scheme: urlScheme,
-    deep_link: deepLink
+    logout_dialog_message_text: logoutDialogMessageText
   } = getPluginData(screenData);
 
   const titleTextStyle = {
@@ -42,27 +33,15 @@ export function getCustomPluginData(screenData) {
   };
 
   const customText = {
-    navigationBarTitle,
     titleText,
     instructionsText,
     logoutDialogMessageText
   };
 
   const customStyle = {
-    navigationBarBackgroundColor,
-    navigationBarTitleColor,
     headerColor,
     listBackgroundColor,
     listSeparatorColor
-  };
-
-  const authConfig = {
-    baseUrl,
-    softwareStatement,
-    requestorId,
-    resourceId,
-    urlScheme,
-    deepLink
   };
 
   return {
@@ -70,8 +49,7 @@ export function getCustomPluginData(screenData) {
     instructionsTextStyle,
     listItemStyle,
     customText,
-    customStyle,
-    authConfig
+    customStyle
   };
 }
 
