@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { ProvidersList } from './Components/ProvidersList.js';
 import { connectToStore } from '@applicaster/zapp-react-native-redux';
+import { getCustomPluginData, PluginContext } from './Config/PluginData';
 import { isTriggerOnAppLaunch } from './Utils';
 
 
@@ -32,6 +33,8 @@ class AdobeComponent extends Component {
       dataSource: null
     }
   }
+
+  pluginData = getCustomPluginData(this.props.screenData);
 
   startFlow = () => {
     const {
@@ -84,45 +87,36 @@ class AdobeComponent extends Component {
     );
   };
 
-  renderPickerScreen(pickerScreenData) {
+  renderPickerScreen() {
     const {
-      navigationBarBackgroundColor,
-      navigationBarTitleColor,
-      navigationBarTitle
-    } = pickerScreenData;
+      customStyle: {
+        navigationBarBackgroundColor,
+        navigationBarTitleColor
+      },
+      customText: {
+        navigationBarTitle
+      }
+    } = this.pluginData;
 
     return (
-      <SafeAreaView style={styles.pickerScreenContainer}>
-        <View style={{ ...styles.pickerScreenNavigationBar, backgroundColor: navigationBarBackgroundColor }}>
-          <Text style={{...styles.pickerNavigationBarTitle, color: navigationBarTitleColor}}>
-            {navigationBarTitle}
-          </Text>
+      <PluginContext.Provider value={this.pluginData}>
+        <View style={styles.pickerScreenContainer}>
+          <View style={{ ...styles.pickerScreenNavigationBar, backgroundColor: navigationBarBackgroundColor }}>
+            <Text style={{...styles.pickerNavigationBarTitle, color: navigationBarTitleColor}}>
+              {navigationBarTitle}
+            </Text>
+          </View>
+          <ProvidersList data={this.state.dataSource} setProviderID={this.setProviderID} />
         </View>
-        <ProvidersList data={this.state.dataSource} setProviderID={this.setProviderID} />
-      </SafeAreaView>
+      </PluginContext.Provider>
     );
   }
 
   render() {
-    const {
-      general: {
-        login_navbar_background_color: navigationBarBackgroundColor,
-        login_navbar_title_color: navigationBarTitleColor,
-        login_navbar_title: navigationBarTitle,
-        login_loading_message: loadingMessage
-      } = {}
-    } = this.props.screenData || {};
-
-    const pickerScreenData = {
-      navigationBarBackgroundColor,
-      navigationBarTitleColor,
-      navigationBarTitle
-    };
-
     return (
       this.state.loading
-        ? this.renderActivityIndicator(loadingMessage)
-        : this.renderPickerScreen(pickerScreenData)
+        ? this.renderActivityIndicator()
+        : this.renderPickerScreen()
     );
   }
 }
