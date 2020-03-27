@@ -102,7 +102,6 @@ public class AdobePassLoginHandler {
     }
 
     void login(Context context, Playable playable, LoginContract.Callback callback) {
-        showLoadingDialog(context);
         this.context = context;
         accessEnablerHandler.setRequestor(pluginRepository.getPluginConfig().getBaseUrl(),
                 pluginRepository.getPluginConfig().getRequestorID(), getItemTitle(playable), getItemId(playable));
@@ -150,10 +149,6 @@ public class AdobePassLoginHandler {
 //                .show();
     }
 
-    private void showLoadingDialog(Context context) {
-//        progressDialog = ProgressDialog.show(context, "",
-//                pluginRepository.getPluginConfig().getLoadingDialogMessage(), true);
-    }
 
     private void hideLoadingDialog() {
 //        if (progressDialog != null) {
@@ -179,8 +174,6 @@ public class AdobePassLoginHandler {
                 throw new RuntimeException("setRequestor(): Unknown status code.");
             }
         }
-
-        hideLoadingDialog();
     }
 
     private void handleSetAuthnStatus(Bundle bundle) {
@@ -239,7 +232,7 @@ public class AdobePassLoginHandler {
 
     private void handleTokenRequestFailed(Bundle bundle) {
         if (context != null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogCustom);
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("Error");
             builder.setMessage(bundle.getString("err_description"));
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {

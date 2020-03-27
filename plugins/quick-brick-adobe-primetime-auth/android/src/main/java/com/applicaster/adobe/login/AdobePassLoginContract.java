@@ -45,12 +45,7 @@ public class AdobePassLoginContract{
         return verified;
     }
 
-
     public void login(Context context, Playable playable, Map additionalParams, final LoginContract.Callback callback) {
         adobePassLoginHandler.login(context, playable, callback);
-    }
-
-    public void login(Context context, Map additionalParams, LoginContract.Callback callback) {
-        adobePassLoginHandler.login(context, null, callback);
     }
 }

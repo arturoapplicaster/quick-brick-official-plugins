@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    // Exceptions
-    <string name="exception_message_generic">Por favor asegúrate de escribir tu email y contraseña</string>
-    <string name="exception_wrong_credentials">Por favor asegúrate de escribir tu email y contraseña</string>
-    <string name="exception_invalid_email">Email inválido</string>
-    <string name="exception_invalid_password">Contraseña invalida</string>
-</resources>
