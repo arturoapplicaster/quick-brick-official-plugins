@@ -9,6 +9,7 @@ import {
   SafeAreaView
 } from 'react-native';
 import { ProvidersList } from './Components/ProvidersList.js';
+import NavbarComponent from './Components/NavbarComponent';
 import { connectToStore } from '@applicaster/zapp-react-native-redux';
 import { getCustomPluginData, PluginContext } from './Config/PluginData';
 import { isTriggerOnAppLaunch } from './Utils';
@@ -78,34 +79,27 @@ class AdobeComponent extends Component {
     adobeAccessEnabler.setProviderID(id);
   };
 
-  renderActivityIndicator = (loadingMessage) => {
+  closeHook = () => {
+    const { callback, payload } = this.props;
+    callback({
+      success: false,
+      payload
+    })
+  };
+
+  renderActivityIndicator = () => {
     return (
       <View style={styles.loadingContainer}>
-        <Text style={styles.loadingTitle}>{loadingMessage}</Text>
-        <ActivityIndicator style={{ marginTop: 20 }} size='large' color='white'/>
+        <ActivityIndicator size='large' color='white'/>
       </View>
     );
   };
 
   renderPickerScreen() {
-    const {
-      customStyle: {
-        navigationBarBackgroundColor,
-        navigationBarTitleColor
-      },
-      customText: {
-        navigationBarTitle
-      }
-    } = this.pluginData;
-
     return (
       <PluginContext.Provider value={this.pluginData}>
         <View style={styles.pickerScreenContainer}>
-          <View style={{ ...styles.pickerScreenNavigationBar, backgroundColor: navigationBarBackgroundColor }}>
-            <Text style={{...styles.pickerNavigationBarTitle, color: navigationBarTitleColor}}>
-              {navigationBarTitle}
-            </Text>
-          </View>
+          <NavbarComponent closeHook={this.closeHook} />
           <ProvidersList data={this.state.dataSource} setProviderID={this.setProviderID} />
         </View>
       </PluginContext.Provider>
@@ -127,23 +121,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  loadingTitle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: 'white'
-  },
   pickerScreenContainer: {
-    flex: 1,
-    backgroundColor: "white"
-  },
-  pickerScreenNavigationBar: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 70
-  },
-  pickerNavigationBarTitle: {
-    position: 'absolute',
-    bottom: 5
+    flex: 1
   }
 });
 
