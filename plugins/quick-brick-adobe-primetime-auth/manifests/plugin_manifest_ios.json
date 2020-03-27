@@ -207,7 +207,7 @@
   },
   "extra_dependencies": [
     {
-      "AdobeAccessEnablerQB": ":path => './quick_brick/node_modules/@applicaster/quick-brick-adobe-primetime-auth/ios/AdobePrimetimeAuthQB.podspec'"
+      "AdobePrimetimeAuthQB": ":path => './quick_brick/node_modules/@applicaster/quick-brick-adobe-primetime-auth/ios/AdobePrimetimeAuthQB.podspec'"
     }
   ],
   "ui_frameworks": [
