@@ -1,5 +1,10 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, SafeAreaView } from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  SafeAreaView
+} from 'react-native';
 
 
 export default function CloseButton({ closeHook, label }) {
@@ -9,7 +14,7 @@ export default function CloseButton({ closeHook, label }) {
         <Text style={styles.buttonText}>{label}</Text>
       </TouchableOpacity>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({

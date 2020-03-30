@@ -2,11 +2,11 @@ import React, { useContext } from 'react';
 import {
   FlatList
 } from 'react-native';
-import { ProviderCell } from './ProviderCell';
+import ProviderCell from './ProviderCell';
 import SeparatorComponent from './SeparatorComponent';
 import { PluginContext } from '../Config/PluginData';
 
-export function ProvidersList({ data, setProviderID }) {
+export default function ProvidersList({ data, setProviderID }) {
   const {
     customStyle: {
       listBackgroundColor
@@ -15,18 +15,18 @@ export function ProvidersList({ data, setProviderID }) {
 
   return (
     <FlatList
-      ItemSeparatorComponent={({highlighted}) => (
+      ItemSeparatorComponent={({ highlighted }) => (
         <SeparatorComponent highlighted={highlighted} />
-        )}
+      )}
       data={data}
       renderItem={({ item }) => (
-        <ProviderCell item={item} setProviderID={setProviderID}/>
+        <ProviderCell item={item} setProviderID={setProviderID} />
       )}
-      keyExtractor={item => item.id}
+      keyExtractor={(item) => item.id}
       style={{ backgroundColor: listBackgroundColor }}
       ListFooterComponent={() => (
         <SeparatorComponent />
       )}
     />
-  )
+  );
 }

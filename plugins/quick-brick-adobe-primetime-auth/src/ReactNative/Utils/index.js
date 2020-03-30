@@ -1,4 +1,4 @@
-import * as R from "ramda";
+import * as R from 'ramda';
 
 const defaultFontSize = 20;
 
@@ -29,13 +29,27 @@ function validateStyles(pluginData) {
 
 const validateFontsize = (key, pluginData) => {
   const value = pluginData[key];
-  const keyname = R.replace('_fontsize', '', key);
-
   const num = Number(value);
   pluginData[key] = Number.isFinite(num) ? num : defaultFontSize;
 };
 
+const isHook = (navigator) => {
+  // need to check if it's a hook.
+  // If it was ui_component && token in localstorage => logout screen;
+  return !!R.propOr(false, 'hookPlugin')(navigator.routeData());
+};
+
+const goBack = (navigator) => {
+  if (navigator.canGoBack()) {
+    navigator.goBack();
+  } else {
+    navigator.goHome();
+  }
+};
+
 export {
   isTriggerOnAppLaunch,
-  getPluginData
-}
+  getPluginData,
+  isHook,
+  goBack
+};

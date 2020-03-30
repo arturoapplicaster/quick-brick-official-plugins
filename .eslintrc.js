@@ -6,12 +6,12 @@ module.exports = {
   },
   'rules': {
     'no-use-before-define': 'off',
-    "switch-default": false,
+    'switch-default': false,
     'react/jsx-filename-extension': 'off',
     'react/prop-types': 'off',
     'comma-dangle': 'off'
   },
   'globals': {
-    "fetch": false
+    'fetch': false
   }
 };

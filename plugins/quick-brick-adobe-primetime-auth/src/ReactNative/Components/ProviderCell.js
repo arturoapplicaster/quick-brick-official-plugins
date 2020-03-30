@@ -9,7 +9,7 @@ import {
 import { PluginContext } from '../Config/PluginData';
 
 
-export function ProviderCell({ item, setProviderID }) {
+export default function ProviderCell({ item, setProviderID }) {
   const { id, logoURL, title } = item;
   const { listItemStyle } = useContext(PluginContext);
 
@@ -23,15 +23,15 @@ export function ProviderCell({ item, setProviderID }) {
         />
       </View>
     </TouchableOpacity>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   cellContainer: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: "center",
-    justifyContent: "space-between",
+    alignItems: 'center',
+    justifyContent: 'space-between',
     height: 65,
     paddingRight: 20,
     paddingLeft: 20

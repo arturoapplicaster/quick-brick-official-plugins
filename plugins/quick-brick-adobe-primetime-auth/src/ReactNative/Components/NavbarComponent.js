@@ -1,5 +1,10 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView
+} from 'react-native';
 import { PluginContext } from '../Config/PluginData';
 import CloseButton from './CloseButton';
 
@@ -17,7 +22,7 @@ export default function NavbarComponent({ closeHook }) {
 
   return (
     <SafeAreaView style={{ backgroundColor: headerColor }}>
-      <CloseButton closeHook={closeHook} label="X"/>
+      <CloseButton closeHook={closeHook} label="X" />
       <View style={styles.container}>
         <Text
           style={[titleTextStyle, styles.title]}
@@ -35,7 +40,7 @@ export default function NavbarComponent({ closeHook }) {
         </Text>
       </View>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({

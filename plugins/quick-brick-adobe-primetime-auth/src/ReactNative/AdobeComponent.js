@@ -1,47 +1,71 @@
 import React, { Component } from 'react';
+import * as R from 'ramda';
 import {
   NativeModules,
   StyleSheet,
   ActivityIndicator,
   NativeEventEmitter,
   View,
-  Text,
-  SafeAreaView
+  Alert
 } from 'react-native';
-import { ProvidersList } from './Components/ProvidersList.js';
-import NavbarComponent from './Components/NavbarComponent';
 import { connectToStore } from '@applicaster/zapp-react-native-redux';
+import ProvidersList from './Components/ProvidersList';
+import NavbarComponent from './Components/NavbarComponent';
 import { getCustomPluginData, PluginContext } from './Config/PluginData';
-import { isTriggerOnAppLaunch } from './Utils';
+import { isTriggerOnAppLaunch, isHook, goBack } from './Utils';
 
 
-const storeConnector = connectToStore(state => { //Store connector entity to obtain screen data
-    const values = Object.values(state.rivers);
-    const screenData = values.find(
-        ({ type }) => type === 'adobe-primetime-auth-qb'
-    );
-    return { screenData }
+const storeConnector = connectToStore((state) => { // Store connector entity to obtain screen data
+  const values = Object.values(state.rivers);
+  const screenData = values.find(
+    ({ type }) => type === 'adobe-primetime-auth-qb'
+  );
+  return { screenData };
 });
-const adobeAccessEnabler = NativeModules.AdobeAccessEnabler; // Native module that will receive events (login, etc...)
-const adobeEventsListener = new NativeEventEmitter(adobeAccessEnabler); //Native module that will send events to RN
+// Native module that will receive events (login, etc...)
+const adobeAccessEnabler = NativeModules.AdobePassContract;
+// Native module that will send events to RN
+const adobeEventsListener = new NativeEventEmitter(adobeAccessEnabler);
 
 
 class AdobeComponent extends Component {
+  pluginData = getCustomPluginData(this.props.screenData);
+
   constructor(props) {
     super(props);
     this.state = {
       loading: true,
       dataSource: null
-    }
+    };
   }
 
-  pluginData = getCustomPluginData(this.props.screenData);
+  componentDidMount() {
+    const { navigator } = this.props;
+    this.setState({ loading: true });
+    return isHook(navigator) ? this.loginFlow() : this.logoutFlow();
+  }
 
-  startFlow = () => {
+  logoutFlow = () => {
+    const logoutText = R.pathOr('', ['customText', 'logoutDialogMessageText'], this.pluginData);
+    const { navigator } = this.props;
+
+    Alert.alert(
+      logoutText,
+      '',
+      [
+        { text: 'Cancel', onPress: () => goBack(navigator), style: 'cancel' },
+        { text: 'OK', onPress: () => goBack(navigator) },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  loginFlow = () => {
     const {
       screenData = {},
       payload = {},
-      navigator = {}
+      navigator,
+      callback
     } = this.props;
 
     const { title = '', id = '' } = payload;
@@ -52,28 +76,29 @@ class AdobeComponent extends Component {
       itemID: id
     };
 
-    //set Initialize AccessEnabler
+    // set Initialize AccessEnabler
     adobeAccessEnabler.setupAccessEnabler(screenData.general);
-    adobeAccessEnabler.startLoginFlow(additionalParams, function (error, response) {
-      console.log(response, 'response from native side');
+    adobeAccessEnabler.startLoginFlow(additionalParams, (error, response) => {
+      const { success } = response;
+      if (success) {
+        callback({
+          success,
+          payload
+        });
+      }
     });
 
-    //subscribe on update of mvpds
+    // subscribe on update of mvpds
     adobeEventsListener.addListener(
-      "showProvidersList",
+      'showProvidersList',
       (response) => {
         this.setState({
           loading: false,
           dataSource: response
         });
       }
-    )
+    );
   };
-
-  componentDidMount() {
-    this.setState({ loading: true });
-    this.startFlow();
-  }
 
   setProviderID = (id) => {
     adobeAccessEnabler.setProviderID(id);
@@ -84,31 +109,33 @@ class AdobeComponent extends Component {
     callback({
       success: false,
       payload
-    })
+    });
   };
 
-  renderActivityIndicator = () => {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size='large' color='white'/>
-      </View>
-    );
-  };
+  renderActivityIndicator = () => (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="white" />
+    </View>
+  );
 
   renderPickerScreen() {
+    const { dataSource } = this.state;
+
     return (
       <PluginContext.Provider value={this.pluginData}>
         <View style={styles.pickerScreenContainer}>
           <NavbarComponent closeHook={this.closeHook} />
-          <ProvidersList data={this.state.dataSource} setProviderID={this.setProviderID} />
+          <ProvidersList data={dataSource} setProviderID={this.setProviderID} />
         </View>
       </PluginContext.Provider>
     );
   }
 
   render() {
+    const { loading } = this.state;
+
     return (
-      this.state.loading
+      loading
         ? this.renderActivityIndicator()
         : this.renderPickerScreen()
     );
