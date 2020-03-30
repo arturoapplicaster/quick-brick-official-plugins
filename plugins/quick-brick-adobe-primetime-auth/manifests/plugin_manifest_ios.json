@@ -38,7 +38,7 @@
             "label": "Base URL",
             "label_tooltip": "Determines which Adobe’s backend environment the plugin should use.",
             "placeholder": "sp.auth.adobe.com/adobe-services",
-            "default": "sp.auth.adobe.com/adobe-services"
+            "initial_value": "sp.auth.adobe.com/adobe-services"
           },
           {
             "type": "text_input",
@@ -80,51 +80,31 @@
         "fields": [
           {
             "type": "color_picker_rgba",
-            "key": "login_navbar_background_color",
-            "label_tooltip": "Login screen top navigation background color",
-            "default": "rgba(255, 255, 255, 1)"
-          },
-          {
-            "type": "text_input",
-            "key": "login_navbar_title",
-            "label": "Login Navigation Title Text",
-            "label_tooltip": "Login screen top navigation title",
-            "placeholder": "Login",
-            "default": "Login"
-          },
-          {
-            "type": "color_picker_rgba",
-            "key": "login_navbar_title_color",
-            "label_tooltip": "Login screen top navigation title color",
-            "default": "rgba(255, 255, 255, 1)"
-          },
-          {
-            "type": "color_picker_rgba",
             "key": "header_color",
             "label": "Header Color",
             "label_tooltip": "Color for the header which contains the title and instructions texts.",
-            "default": "rgba(45, 45, 52, 1)"
+            "initial_value": "rgba(45, 45, 52, 1)"
           },
           {
             "type": "color_picker_rgba",
             "key": "list_background_color",
             "label": "List Background Color",
             "label_tooltip": "Background color for the MVPD List Screen.",
-            "default": "rgba(228, 223, 223, 1)"
+            "initial_value": "rgba(228, 223, 223, 1)"
           },
           {
             "type": "color_picker_rgba",
             "key": "list_separator_color",
             "label": "List Separator Color",
             "label_tooltip": "Color for the item list separator.",
-            "default": "rgba(151, 151, 151, 1)"
+            "initial_value": "rgba(151, 151, 151, 1)"
           },
           {
             "type": "text_input",
             "key": "title_text",
             "label": "Title Text",
             "label_tooltip": "Text at the top of the screen. Briefly introduces the purpose of the plugin (22 characters max).",
-            "default": "Choose Your Provider",
+            "initial_value": "Choose Your Provider",
             "placeholder": "Choose Your Provider"
           },
           {
@@ -132,21 +112,21 @@
             "key": "title_text_fontsize",
             "label": "Title Text Fontsize",
             "label_tooltip": "Fontsize for title Text.",
-            "default": "28"
+            "initial_value": "28"
           },
           {
             "type": "color_picker_rgba",
             "key": "title_text_color",
             "label": "Title Text Color",
             "label_tooltip": "Color for title Text.",
-            "default": "rgba(255, 255, 255, 1)"
+            "initial_value": "rgba(255, 255, 255, 1)"
           },
           {
             "type": "text_input",
             "key": "instructions_text",
             "label": "Instructions Text",
             "label_tooltip": "Text to give specific instructions to the user, about the use of the plugin. (90 characters max)",
-            "default": "Select your cable provider and sign in(have your username and password handy)",
+            "initial_value": "Select your cable provider and sign in(have your username and password handy)",
             "placeholder": "Select your cable provider and sign in(have your username and password handy)"
           },
           {
@@ -154,35 +134,35 @@
             "key": "instructions_text_fontsize",
             "label": "Instructions Text Fontsize",
             "label_tooltip": "Fontsize for instructions Text.",
-            "default": "13"
+            "initial_value": "13"
           },
           {
             "type": "color_picker_rgba",
             "key": "instructions_text_color",
             "label": "Instructions Text Color",
             "label_tooltip": "Color for instructions Text.",
-            "default": "rgba(255, 255, 255, 1)"
+            "initial_value": "rgba(255, 255, 255, 1)"
           },
           {
             "type": "number_input",
             "key": "list_item_fontsize",
             "label": "MVPD List Item Fontsize",
             "label_tooltip": "Fontsize for the MVPD’s names.",
-            "default": "21"
+            "initial_value": "21"
           },
           {
             "type": "color_picker_rgba",
             "key": "list_item_color",
             "label": "MVPD List Item Color",
             "label_tooltip": "Color for the MVPD’s names.",
-            "default": "rgba(0, 0, 0, 1)"
+            "initial_value": "rgba(0, 0, 0, 1)"
           },
           {
             "type": "text_input",
             "key": "logout_dialog_message_text",
             "label": "Logout Dialog Message Text",
             "label_tooltip": "Text to double check the decision made by the user.",
-            "default": "Are you sure you want to sign out?"
+            "initial_value": "Are you sure you want to sign out?"
           }
         ]
       }
