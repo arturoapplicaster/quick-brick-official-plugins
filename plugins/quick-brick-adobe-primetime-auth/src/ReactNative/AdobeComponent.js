@@ -1,43 +1,71 @@
 import React, { Component } from 'react';
+import * as R from 'ramda';
 import {
   NativeModules,
   StyleSheet,
   ActivityIndicator,
   NativeEventEmitter,
   View,
-  Text,
-  SafeAreaView
+  Alert
 } from 'react-native';
-import { ProvidersList } from './Components/ProvidersList.js';
 import { connectToStore } from '@applicaster/zapp-react-native-redux';
-import { isTriggerOnAppLaunch } from './Utils';
+import ProvidersList from './Components/ProvidersList';
+import NavbarComponent from './Components/NavbarComponent';
+import { getCustomPluginData, PluginContext } from './Config/PluginData';
+import { isTriggerOnAppLaunch, isHook, goBack } from './Utils';
 
 
-const storeConnector = connectToStore(state => { //Store connector entity to obtain screen data
-    const values = Object.values(state.rivers);
-    const screenData = values.find(
-        ({ type }) => type === 'adobe-primetime-auth-qb'
-    );
-    return { screenData }
+const storeConnector = connectToStore((state) => { // Store connector entity to obtain screen data
+  const values = Object.values(state.rivers);
+  const screenData = values.find(
+    ({ type }) => type === 'adobe-primetime-auth-qb'
+  );
+  return { screenData };
 });
-const adobeAccessEnabler = NativeModules.AdobeAccessEnabler; // Native module that will receive events (login, etc...)
-const adobeEventsListener = new NativeEventEmitter(adobeAccessEnabler); //Native module that will send events to RN
+// Native module that will receive events (login, etc...)
+const adobeAccessEnabler = NativeModules.AdobePassContract;
+// Native module that will send events to RN
+const adobeEventsListener = new NativeEventEmitter(adobeAccessEnabler);
 
 
 class AdobeComponent extends Component {
+  pluginData = getCustomPluginData(this.props.screenData);
+
   constructor(props) {
     super(props);
     this.state = {
       loading: true,
       dataSource: null
-    }
+    };
   }
 
-  startFlow = () => {
+  componentDidMount() {
+    const { navigator } = this.props;
+    this.setState({ loading: true });
+    return isHook(navigator) ? this.loginFlow() : this.logoutFlow();
+  }
+
+  logoutFlow = () => {
+    const logoutText = R.pathOr('', ['customText', 'logoutDialogMessageText'], this.pluginData);
+    const { navigator } = this.props;
+
+    Alert.alert(
+      logoutText,
+      '',
+      [
+        { text: 'Cancel', onPress: () => goBack(navigator), style: 'cancel' },
+        { text: 'OK', onPress: () => goBack(navigator) },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  loginFlow = () => {
     const {
       screenData = {},
       payload = {},
-      navigator = {}
+      navigator,
+      callback
     } = this.props;
 
     const { title = '', id = '' } = payload;
@@ -48,81 +76,68 @@ class AdobeComponent extends Component {
       itemID: id
     };
 
-    //set Initialize AccessEnabler
+    // set Initialize AccessEnabler
     adobeAccessEnabler.setupAccessEnabler(screenData.general);
-    adobeAccessEnabler.startLoginFlow(additionalParams, function (error, response) {
-      console.log(response, 'response from native side');
+    adobeAccessEnabler.startLoginFlow(additionalParams, (error, response) => {
+      const { success } = response;
+      if (success) {
+        callback({
+          success,
+          payload
+        });
+      }
     });
 
-    //subscribe on update of mvpds
+    // subscribe on update of mvpds
     adobeEventsListener.addListener(
-      "showProvidersList",
+      'showProvidersList',
       (response) => {
         this.setState({
           loading: false,
           dataSource: response
         });
       }
-    )
+    );
   };
-
-  componentDidMount() {
-    this.setState({ loading: true });
-    this.startFlow();
-  }
 
   setProviderID = (id) => {
     adobeAccessEnabler.setProviderID(id);
   };
 
-  renderActivityIndicator = (loadingMessage) => {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingTitle}>{loadingMessage}</Text>
-        <ActivityIndicator style={{ marginTop: 20 }} size='large' color='white'/>
-      </View>
-    );
+  closeHook = () => {
+    const { callback, payload } = this.props;
+    callback({
+      success: false,
+      payload
+    });
   };
 
-  renderPickerScreen(pickerScreenData) {
-    const {
-      navigationBarBackgroundColor,
-      navigationBarTitleColor,
-      navigationBarTitle
-    } = pickerScreenData;
+  renderActivityIndicator = () => (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="white" />
+    </View>
+  );
+
+  renderPickerScreen() {
+    const { dataSource } = this.state;
 
     return (
-      <SafeAreaView style={styles.pickerScreenContainer}>
-        <View style={{ ...styles.pickerScreenNavigationBar, backgroundColor: navigationBarBackgroundColor }}>
-          <Text style={{...styles.pickerNavigationBarTitle, color: navigationBarTitleColor}}>
-            {navigationBarTitle}
-          </Text>
+      <PluginContext.Provider value={this.pluginData}>
+        <View style={styles.pickerScreenContainer}>
+          <NavbarComponent closeHook={this.closeHook} />
+          <ProvidersList data={dataSource} setProviderID={this.setProviderID} />
         </View>
-        <ProvidersList data={this.state.dataSource} setProviderID={this.setProviderID} />
-      </SafeAreaView>
+      </PluginContext.Provider>
     );
   }
 
   render() {
-    const {
-      general: {
-        login_navbar_background_color: navigationBarBackgroundColor,
-        login_navbar_title_color: navigationBarTitleColor,
-        login_navbar_title: navigationBarTitle,
-        login_loading_message: loadingMessage
-      } = {}
-    } = this.props.screenData || {};
-
-    const pickerScreenData = {
-      navigationBarBackgroundColor,
-      navigationBarTitleColor,
-      navigationBarTitle
-    };
+    const { loading } = this.state;
 
     return (
-      this.state.loading
-        ? this.renderActivityIndicator(loadingMessage)
-        : this.renderPickerScreen(pickerScreenData)
+      loading
+        ? this.renderActivityIndicator()
+        : this.renderPickerScreen()
     );
   }
 }
@@ -133,23 +148,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  loadingTitle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: 'white'
-  },
   pickerScreenContainer: {
-    flex: 1,
-    backgroundColor: "white"
-  },
-  pickerScreenNavigationBar: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 70
-  },
-  pickerNavigationBarTitle: {
-    position: 'absolute',
-    bottom: 5
+    flex: 1
   }
 });
 

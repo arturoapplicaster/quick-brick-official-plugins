@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   Text,
@@ -6,46 +6,39 @@ import {
   StyleSheet,
   TouchableOpacity
 } from 'react-native';
+import { PluginContext } from '../Config/PluginData';
 
 
-export function ProviderCell(props) {
-  const {
-    item: {
-      id,
-      logoURL,
-      title
-    },
-    setProviderID
-  } = props;
+export default function ProviderCell({ item, setProviderID }) {
+  const { id, logoURL, title } = item;
+  const { listItemStyle } = useContext(PluginContext);
 
   return (
     <TouchableOpacity onPress={() => setProviderID(id)}>
       <View style={styles.cellContainer}>
-        <Text style={styles.cellTitle}>{title}</Text>
+        <Text style={[listItemStyle, { fontWeight: 'bold' }]}>{title}</Text>
         <Image
           style={styles.cellImage}
-          source={{uri: logoURL}}/>
+          source={{ uri: logoURL }}
+        />
       </View>
     </TouchableOpacity>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   cellContainer: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: "center",
-    justifyContent: "space-between",
-    height: 50
-  },
-  cellTitle: {
-    textAlign: "left",
-    marginLeft: 10
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: 65,
+    paddingRight: 20,
+    paddingLeft: 20
   },
   cellImage: {
-    height: 50,
-    width: 50,
-    marginRight: 10,
-    resizeMode: 'center'
+    height: 33,
+    width: 100,
+    resizeMode: 'contain'
   }
 });
