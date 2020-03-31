@@ -10,7 +10,7 @@ public enum PluginDataRepository implements PluginRepository {
     INSTANCE;
 
     private PluginConfig pluginConfig;
-    List<Mvpd> mvpds = new ArrayList<>();
+    private List<Mvpd> mvpds = new ArrayList<>();
 
     @Override
     public void setPluginConfiguration(PluginConfig pluginConfig) {

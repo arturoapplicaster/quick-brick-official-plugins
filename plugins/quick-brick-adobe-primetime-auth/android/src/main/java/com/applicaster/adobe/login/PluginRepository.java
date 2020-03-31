@@ -7,13 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface PluginRepository {
-
     void setPluginConfiguration(PluginConfig pluginConfig);
-
     PluginConfig getPluginConfig();
-
     void setMvdpsList(ArrayList<Mvpd> mvpds);
-
     List<Mvpd> getMvdpsList();
-
 }

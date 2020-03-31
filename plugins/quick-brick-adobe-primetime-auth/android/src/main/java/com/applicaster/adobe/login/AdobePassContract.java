@@ -1,7 +1,5 @@
 package com.applicaster.adobe.login;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.util.Log;
 
 import com.applicaster.adobe.login.mapper.PluginDataMapper;
@@ -15,9 +13,11 @@ import javax.annotation.Nonnull;
 
 public class AdobePassContract extends ReactContextBaseJavaModule {
     private static final String TAG = "AdobePassContract";
+    private static ReactApplicationContext reactContext;
+
     private AdobePassLoginHandler adobePassLoginHandler;
     private PluginRepository pluginRepository;
-    private static ReactApplicationContext reactContext;
+    private AccessEnablerHandler accessEnablerHandler;
 
     public AdobePassContract(@Nonnull ReactApplicationContext context) {
         super(context);
@@ -31,39 +31,38 @@ public class AdobePassContract extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void showToast() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getCurrentActivity());
-        alertDialog.setTitle("Hello from java");
-        alertDialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-        AlertDialog dialog = alertDialog.create();
-        dialog.show();
-    }
-
-    @ReactMethod
     public void setupAccessEnabler(ReadableMap pluginConfig) {
         Log.d(TAG, "Call from RN: setupAccessEnabler " + pluginConfig);
-        pluginRepository = PluginDataRepository.INSTANCE;
-        adobePassLoginHandler = new AdobePassLoginHandler(PluginDataRepository.INSTANCE,
-                AccessEnablerHandler.INSTANCE, reactContext);
+        createHandlers();
         setPluginConfigurationParams(pluginConfig);
+        adobePassLoginHandler.initializeAccessEnabler();
+    }
+
+    private void createHandlers() {
+        pluginRepository = PluginDataRepository.INSTANCE;
+        accessEnablerHandler = AccessEnablerHandler.INSTANCE;
+        adobePassLoginHandler = new AdobePassLoginHandler(pluginRepository,
+                accessEnablerHandler, reactContext);
+    }
+
+    private void setPluginConfigurationParams(ReadableMap params) {
+        PluginDataMapper dataMapper = new PluginDataMapper();
+        pluginRepository.setPluginConfiguration(dataMapper.mapParamsToConfig(params));
     }
 
     @ReactMethod
-    public void startLoginFlow(final ReadableMap additionalConfig, final Callback callback) {
+    public void startLoginFlow(ReadableMap additionalConfig, final Callback rnCallback) {
         Log.d(TAG, "Call from RN: startLoginFlow" + additionalConfig);
+        final String itemTitle = additionalConfig.getString("itemTitle");
+        final String itemID = additionalConfig.getString("itemID");
         if (getCurrentActivity() != null) {
             getCurrentActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     adobePassLoginHandler.login(getCurrentActivity(),
-                            additionalConfig.getString("itemTitle"),
-                            additionalConfig.getString("itemID"),
-                            callback);
+                            itemTitle,
+                            itemID,
+                            rnCallback);
                 }
             });
         }
@@ -72,12 +71,12 @@ public class AdobePassContract extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setProviderID(String providerID) {
         Log.d(TAG, "Call from RN: setProviderID " + providerID);
-        AccessEnablerHandler.INSTANCE.getAccessEnabler().setSelectedProvider(providerID);
+        accessEnablerHandler.getAccessEnabler().setSelectedProvider(providerID);
     }
 
-    public void setPluginConfigurationParams(ReadableMap params) {
-        PluginDataMapper dataMapper = new PluginDataMapper();
-        pluginRepository.setPluginConfiguration(dataMapper.mapParamsToConfig(params));
-        adobePassLoginHandler.initializeAccessEnabler();
+    @ReactMethod
+    public void logout() {
+        Log.d(TAG, "Call from RN: logout");
+        accessEnablerHandler.logout();
     }
 }

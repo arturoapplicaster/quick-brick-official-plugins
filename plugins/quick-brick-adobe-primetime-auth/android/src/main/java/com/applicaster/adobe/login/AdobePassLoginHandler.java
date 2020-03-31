@@ -37,7 +37,7 @@ public class AdobePassLoginHandler {
     private ProgressDialog progressDialog;
 
     private AccessEnablerDelegate delegate;
-    private Callback loginCallback;
+    private Callback reactLoginCallback;
     private Context context;
     private ReactApplicationContext reactContext;
 
@@ -47,7 +47,7 @@ public class AdobePassLoginHandler {
             new MessageHandler() { public void handle(Bundle bundle) { handleSetToken(bundle); } },                 //  2 SET_TOKEN
             new MessageHandler() { public void handle(Bundle bundle) { handleTokenRequestFailed(bundle); } },    //  3 TOKEN_REQUEST_FAILED
             new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },         //  4 SELECTED_PROVIDER
-            new MessageHandler() { public void handle(Bundle bundle) { handleDisplayProviderDialog(bundle); } },    //  5 DISPLAY_PROVIDER_DIALOG
+            new MessageHandler() { public void handle(Bundle bundle) { handleMVPDs(bundle); } },    //  5 DISPLAY_PROVIDER_DIALOG
             new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },            //  6 NAVIGATE_TO_URL
             new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },         //  7 SEND_TRACKING_DATA
             new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },        //  8 SET_METADATA_STATUS
@@ -97,38 +97,7 @@ public class AdobePassLoginHandler {
         accessEnablerHandler.setRequestor(pluginRepository.getPluginConfig().getBaseUrl(),
                 pluginRepository.getPluginConfig().getRequestorID(), itemTitle, itemId);
         accessEnablerHandler.checkAuthentication();
-        loginCallback = callback;
-    }
-
-    void displayLogoutAlertDialog(Context context) {
-//        AlertDialog.Builder builder;
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
-//        } else {
-//            builder = new AlertDialog.Builder(context);
-//        }
-//
-//        PluginConfig pluginConfig = PluginDataRepository.INSTANCE.getPluginConfig();
-//        builder.setTitle(pluginConfig.getLogoutDialogTitle())
-//                .setMessage(pluginConfig.getLogoutDialogMessage())
-//                .setPositiveButton(pluginConfig.getLogoutDialogPositiveButtonText(), new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        accessEnablerHandler.logout();
-//                    }
-//                })
-//                .setNegativeButton(pluginConfig.getLogoutDialogNegativeButtonText(), new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        // do nothing
-//                    }
-//                })
-//                .show();
-    }
-
-
-    private void hideLoadingDialog() {
-//        if (progressDialog != null) {
-//            progressDialog.dismiss();
-//        }
+        reactLoginCallback = callback;
     }
 
     private void handleSetRequestor(Bundle bundle) {
@@ -146,6 +115,7 @@ public class AdobePassLoginHandler {
             }
             break;
             default: {
+                Log.d("AdobePass", "setAuthnStatus(): Unknown status code.");
                 throw new RuntimeException("setRequestor(): Unknown status code.");
             }
         }
@@ -158,46 +128,30 @@ public class AdobePassLoginHandler {
 
         switch (status) {
             case (AccessEnabler.ACCESS_ENABLER_STATUS_SUCCESS): {
-                Log.d("Adobepass", "Authentication success");
+                Log.d("AdobePass", "Authentication success");
                 accessEnablerHandler.getAuthorization();
             }
             break;
             case (AccessEnabler.ACCESS_ENABLER_STATUS_ERROR): {
-                Log.d("Adobepass", "Authentication failed: " + errCode);
+                Log.d("AdobePass", "Authentication failed: " + errCode);
                 accessEnablerHandler.getAuthentication();
             }
             break;
             default: {
+                Log.d("AdobePass", "setAuthnStatus(): Unknown status code.");
                 throw new RuntimeException("setAuthnStatus(): Unknown status code.");
             }
         }
     }
 
     private void handleSetToken(Bundle bundle) {
-//        // extract the token and resource ID
-//        String resourceId = bundle.getString("resource_id");
-//        String token = bundle.getString("token");
-//
-//        String error;
-//        if (token == null || token.trim().length() == 0) {
-//            error = "empty token";
-//        } else {
-//            try {
-//                error = new MediaTokenValidatorTask().execute(pluginRepository.getPluginConfig().getTokenValidationUrl(), resourceId, token).get();
-//            } catch (Exception e) {
-//                Log.d(LOG_TAG, e.getMessage());
-//                error = "token validation process interrupted";
-//            }
-//        }
-//
-//        if (error == null) {
-        loginCallback.invoke(true);
-//        } else {
-//            Log.d(LOG_TAG, "Authorisation: FAILED\n\nFailed media token validation\n\nResource: " + resourceId + "\nError: " + error);
-//        }
-//
-//        Log.d(LOG_TAG, resou
-//        Log.d(LOG_TAG, "Token: " + token);rceId);
+        String resourceId = bundle.getString("resource_id");
+        String token = bundle.getString("token");
+        Log.d(LOG_TAG, "Token: " + token + "resId" + resourceId);
+
+        WritableMap callbackParams = new WritableNativeMap();
+        callbackParams.putString("token", token);
+        reactLoginCallback.invoke(callbackParams);
     }
 
     private void noOps(Bundle bundle) {
@@ -218,11 +172,10 @@ public class AdobePassLoginHandler {
             });
             builder.show();
         }
-        loginCallback.invoke(false);
-//        loginCallback.onResult(false);
+        reactLoginCallback.invoke();
     }
 
-    private void handleDisplayProviderDialog(Bundle bundle) {
+    private void handleMVPDs(Bundle bundle) {
         WritableArray payload = Arguments.createArray();
         for (Mvpd mvpd : pluginRepository.getMvdpsList()) {
             WritableMap map = new WritableNativeMap();
