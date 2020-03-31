@@ -49,6 +49,20 @@ class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, Entitlem
         }
     }
     
+    @objc func logout() {
+       self.userAuthenticated = false
+       self.tokensDictionary = [:]
+       self.authorizedResourceIDs = []
+       self.accessEnabler.logout()
+       // Delete cookies from UIWebView as well in case someone clicked remember me
+       let cookieStorage = HTTPCookieStorage.shared
+       if let cookies = cookieStorage.cookies {
+           for cookie in cookies {
+               cookieStorage.deleteCookie(cookie as HTTPCookie)
+           }
+       }
+    }
+    
     @objc func setProviderID(_ providerID: String) {
         self.accessEnabler.setSelectedProvider(providerID)
     }
