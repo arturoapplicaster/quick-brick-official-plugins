@@ -11,6 +11,6 @@
 
 RCT_EXTERN_METHOD(setupAccessEnabler:(NSDictionary*) pluginConfig)
 RCT_EXTERN_METHOD(setProviderID:(NSString*) providerID)
-RCT_EXTERN_METHOD(startLoginFlow:(NSDictionary*) additionalParameters callback:(RCTResponseSenderBlock)callback)
-
+RCT_EXTERN_METHOD(startLoginFlow:(NSDictionary*) additionalParameters callback:(RCTResponseSenderBlock) callback)
+RCT_EXTERN_METHOD(logout)
 @end
