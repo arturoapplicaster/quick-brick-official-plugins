@@ -1,14 +1,15 @@
 Pod::Spec.new do |s|
-  s.name         = 'AdobeAccessEnablerQB'
+  s.name         = 'AdobePrimetimeAuthQB'
   s.version      = '0.0.1'
-  s.summary      = 'Cleeng login plugin'
+  s.summary      = 'Adobe Primetime Auth Quick Brick'
   s.license      = 'MIT'
   s.homepage     = 'http://applicaster.com'
   s.author       = {"Brel Egor" => "brel@scand.com"}
   s.ios.deployment_target = '10.0'
   s.swift_version = '5.1'
-  s.source       = { :git => "https://github.com/applicaster/zapp-login-plugin-cleeng", :tag => 'ios-' + s.version.to_s }
-  s.source_files = 'AdobeAccessEnablerQB/**/*.{swift,h,m}'
+  s.source       = { :git => "https://github.com/applicaster/quick-brick-official-plugins"}
+  s.source_files = 'AdobePrimetimeAuthQB/**/*.{swift,h,m}'
+  s.resources = 'AdobePrimetimeAuthQB/**/*.{xib,nib,storyboard}'
   s.requires_arc = true
   s.static_framework = true
   s.dependency 'AccessEnabler'
