@@ -9,8 +9,8 @@ repositories {
     maven { url 'https://jitpack.io' }
     maven {
         credentials {
-            username "drazumeev-sc@applicaster-ltd"
-            password "cad9fab6cc174e4a38b9342fff9e0a0cf26fe9dd"
+            username System.getenv("MAVEN_USERNAME")
+            password System.getenv("MAVEN_PASSWORD")
         }
         url 'https://dl.bintray.com/applicaster-ltd/maven'
     }
