@@ -5,6 +5,8 @@ import {
   StyleSheet,
   ActivityIndicator,
   NativeEventEmitter,
+  DeviceEventEmitter,
+  Platform,
   View,
   Alert
 } from 'react-native';
@@ -25,7 +27,10 @@ const storeConnector = connectToStore((state) => { // Store connector entity to 
 // Native module that will receive events (login, etc...)
 const adobeAccessEnabler = NativeModules.AdobePassContract;
 // Native module that will send events to RN
-const adobeEventsListener = new NativeEventEmitter(adobeAccessEnabler);
+const adobeEventsListener = Platform.select({
+  ios: new NativeEventEmitter(adobeAccessEnabler),
+  android: DeviceEventEmitter
+});
 
 
 class AdobeComponent extends Component {
@@ -40,10 +45,33 @@ class AdobeComponent extends Component {
   }
 
   componentDidMount() {
-    const { navigator } = this.props;
+    const { navigator, screenData = {} } = this.props;
     this.setState({ loading: true });
+
+    this.initAdobeAccessEnabler(screenData);
     return isHook(navigator) ? this.loginFlow() : this.logoutFlow();
   }
+
+  componentWillUnmount() {
+    this.subscription.remove();
+  }
+
+  initAdobeAccessEnabler = ({ general: data }) => {
+    // Initialize AccessEnabler
+    this.accessEnabler = adobeAccessEnabler;
+    this.accessEnabler.setupAccessEnabler(data);
+
+    // subscribe on update of mvpds
+    this.subscription = adobeEventsListener.addListener(
+      'showProvidersList',
+      (response) => {
+        this.setState({
+          loading: false,
+          dataSource: response
+        });
+      }
+    );
+  };
 
   logoutFlow = () => {
     const logoutText = R.pathOr('', ['customText', 'logoutDialogMessageText'], this.pluginData);
@@ -54,7 +82,7 @@ class AdobeComponent extends Component {
       '',
       [
         { text: 'Cancel', onPress: () => goBack(navigator), style: 'cancel' },
-        { text: 'OK', onPress: () => goBack(navigator) },
+        { text: 'OK', onPress: () => this.logOut(navigator) },
       ],
       { cancelable: false }
     );
@@ -62,7 +90,6 @@ class AdobeComponent extends Component {
 
   loginFlow = () => {
     const {
-      screenData = {},
       payload = {},
       navigator,
       callback
@@ -76,9 +103,8 @@ class AdobeComponent extends Component {
       itemID: id
     };
 
-    // set Initialize AccessEnabler
-    adobeAccessEnabler.setupAccessEnabler(screenData.general);
-    adobeAccessEnabler.startLoginFlow(additionalParams, (error, response) => {
+    // startLoginFlow on AccessEnabler
+    this.accessEnabler.startLoginFlow(additionalParams, (error, response) => {
       const { success } = response;
       if (success) {
         callback({
@@ -87,21 +113,15 @@ class AdobeComponent extends Component {
         });
       }
     });
+  };
 
-    // subscribe on update of mvpds
-    adobeEventsListener.addListener(
-      'showProvidersList',
-      (response) => {
-        this.setState({
-          loading: false,
-          dataSource: response
-        });
-      }
-    );
+  logOut = (navigator) => {
+    this.accessEnabler.logout();
+    goBack(navigator);
   };
 
   setProviderID = (id) => {
-    adobeAccessEnabler.setProviderID(id);
+    this.accessEnabler.setProviderID(id);
   };
 
   closeHook = () => {
