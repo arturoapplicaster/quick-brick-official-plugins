@@ -1,10 +1,10 @@
 package com.applicaster.adobe.login;
 
+import com.adobe.adobepass.accessenabler.models.Mvpd;
 import com.applicaster.adobe.login.model.PluginConfig;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.Observable;
 
 public interface PluginRepository {
 
@@ -12,8 +12,8 @@ public interface PluginRepository {
 
     PluginConfig getPluginConfig();
 
-    void setMvdpsList(List<String> mvpds);
+    void setMvdpsList(ArrayList<Mvpd> mvpds);
 
-    List<String> getMvdpsList();
+    List<Mvpd> getMvdpsList();
 
 }

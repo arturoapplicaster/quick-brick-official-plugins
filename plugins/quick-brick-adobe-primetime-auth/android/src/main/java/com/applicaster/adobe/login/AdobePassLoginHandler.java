@@ -3,8 +3,6 @@ package com.applicaster.adobe.login;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,26 +10,17 @@ import android.util.Log;
 
 import com.adobe.adobepass.accessenabler.api.AccessEnabler;
 import com.adobe.adobepass.accessenabler.api.AccessEnablerException;
-import com.adobe.adobepass.accessenabler.utils.Utils;
-import com.applicaster.adobe.login.model.PluginConfig;
+import com.adobe.adobepass.accessenabler.models.Mvpd;
 import com.applicaster.app.CustomApplication;
-import com.applicaster.plugin_manager.login.LoginContract;
-import com.applicaster.plugin_manager.playersmanager.Playable;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -48,8 +37,9 @@ public class AdobePassLoginHandler {
     private ProgressDialog progressDialog;
 
     private AccessEnablerDelegate delegate;
-    private LoginContract.Callback loginCallback;
+    private Callback loginCallback;
     private Context context;
+    private ReactApplicationContext reactContext;
 
     private MessageHandler[] messageHandlers = new MessageHandler[] {
             new MessageHandler() { public void handle(Bundle bundle) { handleSetRequestor(bundle); } },             //  0 SET_REQUESTOR_COMPLETE
@@ -65,10 +55,11 @@ public class AdobePassLoginHandler {
     };
 
     AdobePassLoginHandler(PluginRepository pluginRepository,
-                          AccessEnablerHandler accessEnablerHandler) {
+                          AccessEnablerHandler accessEnablerHandler, ReactApplicationContext reactContext) {
         this.pluginRepository = pluginRepository;
         this.accessEnablerHandler = accessEnablerHandler;
         this.delegate = new AccessEnablerDelegate(new IncomingHandler(messageHandlers), pluginRepository);
+        this.reactContext = reactContext;
     }
 
     void initializeAccessEnabler() {
@@ -101,28 +92,12 @@ public class AdobePassLoginHandler {
         }
     }
 
-    void login(Context context, Playable playable, LoginContract.Callback callback) {
+    void login(Context context, String itemTitle, String itemId, Callback callback) {
         this.context = context;
         accessEnablerHandler.setRequestor(pluginRepository.getPluginConfig().getBaseUrl(),
-                pluginRepository.getPluginConfig().getRequestorID(), getItemTitle(playable), getItemId(playable));
+                pluginRepository.getPluginConfig().getRequestorID(), itemTitle, itemId);
         accessEnablerHandler.checkAuthentication();
         loginCallback = callback;
-    }
-
-    private String getItemId(Playable playable) {
-        if (playable != null) {
-            return playable.getAnalyticsParams().get("Item ID");
-        }
-
-        return "";
-    }
-
-    private String getItemTitle(Playable playable) {
-        if (playable != null) {
-            return playable.getAnalyticsParams().get("Item Name");
-        }
-
-        return "";
     }
 
     void displayLogoutAlertDialog(Context context) {
@@ -216,7 +191,7 @@ public class AdobePassLoginHandler {
 //        }
 //
 //        if (error == null) {
-            loginCallback.onResult(true);
+        loginCallback.invoke(true);
 //        } else {
 //            Log.d(LOG_TAG, "Authorisation: FAILED\n\nFailed media token validation\n\nResource: " + resourceId + "\nError: " + error);
 //        }
@@ -243,12 +218,20 @@ public class AdobePassLoginHandler {
             });
             builder.show();
         }
-
-        loginCallback.onResult(false);
+        loginCallback.invoke(false);
+//        loginCallback.onResult(false);
     }
 
     private void handleDisplayProviderDialog(Bundle bundle) {
-//        navigator.goToMvpdPicker(CustomApplication.getAppContext());
+        WritableArray payload = Arguments.createArray();
+        for (Mvpd mvpd : pluginRepository.getMvdpsList()) {
+            WritableMap map = new WritableNativeMap();
+            map.putString("id", mvpd.getId());
+            map.putString("title", mvpd.getDisplayName());
+            map.putString("logoURL", mvpd.getLogoUrl());
+            payload.pushMap(map);
+        }
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("showProvidersList", payload);
     }
 
     private static class IncomingHandler extends Handler {

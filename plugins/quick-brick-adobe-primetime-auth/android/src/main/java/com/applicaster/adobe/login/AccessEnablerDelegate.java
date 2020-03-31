@@ -148,7 +148,7 @@ public class AccessEnablerDelegate implements IAccessEnablerDelegate {
             }
         }
 
-        pluginRepository.setMvdpsList(serializedData);
+        pluginRepository.setMvdpsList(mvpds);
 
         msg.setData(bundle);
         handler.sendMessage(msg);

@@ -1,18 +1,16 @@
 package com.applicaster.adobe.login;
 
+import com.adobe.adobepass.accessenabler.models.Mvpd;
 import com.applicaster.adobe.login.model.PluginConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-
 public enum PluginDataRepository implements PluginRepository {
     INSTANCE;
 
     private PluginConfig pluginConfig;
-    List<String> mvpds = new ArrayList<>();
+    List<Mvpd> mvpds = new ArrayList<>();
 
     @Override
     public void setPluginConfiguration(PluginConfig pluginConfig) {
@@ -25,12 +23,12 @@ public enum PluginDataRepository implements PluginRepository {
     }
 
     @Override
-    public void setMvdpsList(List<String> mvpds) {
+    public void setMvdpsList(ArrayList<Mvpd> mvpds) {
         this.mvpds = mvpds;
     }
 
     @Override
-    public List<String> getMvdpsList() {
+    public List<Mvpd> getMvdpsList() {
         return mvpds;
     }
 }
