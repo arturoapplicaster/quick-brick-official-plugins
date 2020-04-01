@@ -3,6 +3,7 @@ package com.applicaster.adobe.login;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,6 +12,7 @@ import android.util.Log;
 import com.adobe.adobepass.accessenabler.api.AccessEnabler;
 import com.adobe.adobepass.accessenabler.api.AccessEnablerException;
 import com.adobe.adobepass.accessenabler.models.Mvpd;
+import com.applicaster.adobe.login.webview.LoginProviderActivity;
 import com.applicaster.app.CustomApplication;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -48,7 +50,8 @@ public class AdobePassLoginHandler {
             new MessageHandler() { public void handle(Bundle bundle) { handleTokenRequestFailed(bundle); } },    //  3 TOKEN_REQUEST_FAILED
             new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },         //  4 SELECTED_PROVIDER
             new MessageHandler() { public void handle(Bundle bundle) { handleMVPDs(bundle); } },    //  5 DISPLAY_PROVIDER_DIALOG
-            new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },            //  6 NAVIGATE_TO_URL
+//            new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },            //  6 NAVIGATE_TO_URL
+            new MessageHandler() { public void handle(Bundle bundle) { handleNavigateToUrl(bundle); } },            //  6 NAVIGATE_TO_URL
             new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },         //  7 SEND_TRACKING_DATA
             new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },        //  8 SET_METADATA_STATUS
             new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },   //  9 PREAUTHORIZED_RESOURCES
@@ -173,6 +176,15 @@ public class AdobePassLoginHandler {
             builder.show();
         }
         reactLoginCallback.invoke();
+    }
+
+    private void handleNavigateToUrl(Bundle bundle) {
+        String url = bundle.getString("url");
+        if (context != null && url!= null && !url.isEmpty()) {
+            Intent intent = new Intent(context, LoginProviderActivity.class);
+            intent.putExtra("url", url);
+            context.startActivity(intent);
+        }
     }
 
     private void handleMVPDs(Bundle bundle) {
