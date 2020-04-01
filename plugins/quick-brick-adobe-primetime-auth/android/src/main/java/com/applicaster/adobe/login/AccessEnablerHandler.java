@@ -35,7 +35,7 @@ public enum AccessEnablerHandler {
                 this.itemId = itemId;
                 accessEnabler.setRequestor(PluginDataRepository.INSTANCE.getPluginConfig().getRequestorID(), spUrls);
             } else {
-                Log.d("Adobepass", "Enter a valid requestor id.");
+                Log.d("AdobePass", "Enter a valid requestor id.");
             }
         }
     }

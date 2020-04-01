@@ -138,18 +138,7 @@ public class AccessEnablerDelegate implements IAccessEnablerDelegate {
         Message msg = handler.obtainMessage();
         Bundle bundle = createMessagePayload(DISPLAY_PROVIDER_DIALOG, message);
 
-        // serialize the MVPD objects
-        ArrayList<String> serializedData = new ArrayList<String>();
-        for (Mvpd mvpd : mvpds) {
-            try {
-                serializedData.add(mvpd.serialize());
-            } catch (IOException e) {
-                Log.e(LOG_TAG, e.toString());
-            }
-        }
-
-        pluginRepository.setMvdpsList(mvpds);
-
+        bundle.putSerializable("mvpds", mvpds);
         msg.setData(bundle);
         handler.sendMessage(msg);
     }

@@ -13,15 +13,16 @@ import javax.annotation.Nonnull;
 
 public class AdobePassContract extends ReactContextBaseJavaModule {
     private static final String TAG = "AdobePassContract";
-    private static ReactApplicationContext reactContext;
 
     private AdobePassLoginHandler adobePassLoginHandler;
     private PluginRepository pluginRepository;
     private AccessEnablerHandler accessEnablerHandler;
+    private ReactSession reactSession;
 
     public AdobePassContract(@Nonnull ReactApplicationContext context) {
         super(context);
-        reactContext = context;
+        reactSession = ReactSession.INSTANCE;
+        reactSession.setReactContext(context);
     }
 
     @Nonnull
@@ -41,8 +42,7 @@ public class AdobePassContract extends ReactContextBaseJavaModule {
     private void createHandlers() {
         pluginRepository = PluginDataRepository.INSTANCE;
         accessEnablerHandler = AccessEnablerHandler.INSTANCE;
-        adobePassLoginHandler = new AdobePassLoginHandler(pluginRepository,
-                accessEnablerHandler, reactContext);
+        adobePassLoginHandler = new AdobePassLoginHandler(pluginRepository, accessEnablerHandler, reactSession);
     }
 
     private void setPluginConfigurationParams(ReadableMap params) {

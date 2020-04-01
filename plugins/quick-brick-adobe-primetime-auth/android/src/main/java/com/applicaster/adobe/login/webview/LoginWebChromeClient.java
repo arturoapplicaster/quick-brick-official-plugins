@@ -8,7 +8,7 @@ public class LoginWebChromeClient extends WebChromeClient {
 
     private ProgressBar pbLoadingProgress;
 
-    public LoginWebChromeClient(ProgressBar pbLoadingProgress) {
+    LoginWebChromeClient(ProgressBar pbLoadingProgress) {
         this.pbLoadingProgress = pbLoadingProgress;
     }
 

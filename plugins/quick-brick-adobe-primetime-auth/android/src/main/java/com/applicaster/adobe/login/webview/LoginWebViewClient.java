@@ -1,6 +1,7 @@
 package com.applicaster.adobe.login.webview;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -12,11 +13,10 @@ import com.applicaster.adobe.login.model.PluginConfig;
 
 class LoginWebViewClient extends WebViewClient {
 
-    String redirectUriScheme = "adobepass://";
-    String redirectUri;
-    LoginFinishCallback loginFinishCallback;
+    private String redirectUri;
+    private LoginFinishCallback loginFinishCallback;
 
-    public LoginWebViewClient(Context context, LoginFinishCallback callback) {
+    LoginWebViewClient(Context context, LoginFinishCallback callback) {
         this.loginFinishCallback = callback;
         this.redirectUri = getRedirectUri(context);
     }
@@ -37,10 +37,11 @@ class LoginWebViewClient extends WebViewClient {
     private String getRedirectUri(Context context) {
         PluginConfig config = PluginDataRepository.INSTANCE.getPluginConfig();
         String redirectUri = config.getRedirectUri();
-        if (redirectUri != null && !redirectUri.isEmpty()) {
+        String redirectUriScheme = "adobepass://";
+        if (!TextUtils.isEmpty(redirectUri)) {
             return redirectUriScheme + redirectUri;
-        }
-        return redirectUriScheme + context.getResources().getString(R.string.redirect_uri);
+        } else
+            return redirectUriScheme + context.getResources().getString(R.string.redirect_uri);
     }
 }
 

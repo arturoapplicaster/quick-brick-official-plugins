@@ -1,6 +1,5 @@
 package com.applicaster.adobe.login;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,32 +15,30 @@ import com.applicaster.adobe.login.webview.LoginProviderActivity;
 import com.applicaster.app.CustomApplication;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.appcompat.app.AlertDialog;
 
-public class AdobePassLoginHandler {
+class AdobePassLoginHandler {
 
     public interface MessageHandler {
         void handle(Bundle bundle);
     }
 
-    private final static String LOG_TAG = "AdobePass";
+    private final static String TAG = "AdobePass";
 
     private final PluginRepository pluginRepository;
     private final AccessEnablerHandler accessEnablerHandler;
-    private ProgressDialog progressDialog;
+    private final AccessEnablerDelegate delegate;
+    private final ReactSession reactSession;
 
-    private AccessEnablerDelegate delegate;
-    private Callback reactLoginCallback;
     private Context context;
-    private ReactApplicationContext reactContext;
 
     private MessageHandler[] messageHandlers = new MessageHandler[] {
             new MessageHandler() { public void handle(Bundle bundle) { handleSetRequestor(bundle); } },             //  0 SET_REQUESTOR_COMPLETE
@@ -50,7 +47,6 @@ public class AdobePassLoginHandler {
             new MessageHandler() { public void handle(Bundle bundle) { handleTokenRequestFailed(bundle); } },    //  3 TOKEN_REQUEST_FAILED
             new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },         //  4 SELECTED_PROVIDER
             new MessageHandler() { public void handle(Bundle bundle) { handleMVPDs(bundle); } },    //  5 DISPLAY_PROVIDER_DIALOG
-//            new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },            //  6 NAVIGATE_TO_URL
             new MessageHandler() { public void handle(Bundle bundle) { handleNavigateToUrl(bundle); } },            //  6 NAVIGATE_TO_URL
             new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },         //  7 SEND_TRACKING_DATA
             new MessageHandler() { public void handle(Bundle bundle) { noOps(bundle); } },        //  8 SET_METADATA_STATUS
@@ -58,11 +54,12 @@ public class AdobePassLoginHandler {
     };
 
     AdobePassLoginHandler(PluginRepository pluginRepository,
-                          AccessEnablerHandler accessEnablerHandler, ReactApplicationContext reactContext) {
+                          AccessEnablerHandler accessEnablerHandler,
+                          ReactSession reactSession) {
         this.pluginRepository = pluginRepository;
         this.accessEnablerHandler = accessEnablerHandler;
+        this.reactSession = reactSession;
         this.delegate = new AccessEnablerDelegate(new IncomingHandler(messageHandlers), pluginRepository);
-        this.reactContext = reactContext;
     }
 
     void initializeAccessEnabler() {
@@ -76,7 +73,7 @@ public class AdobePassLoginHandler {
                     pluginRepository.getPluginConfig().getSoftwareStatement(),
                     pluginRepository.getPluginConfig().getRedirectUri());
         } catch (AccessEnablerException e) {
-            Log.d("Adobepass", "Failed to initialize the AccessEnabler library. " + e.getMessage());
+            Log.d(TAG, "Failed to initialize the AccessEnabler library. " + e.getMessage());
         }
 
         // configure the AccessEnabler library
@@ -90,7 +87,7 @@ public class AdobePassLoginHandler {
 
             accessEnablerHandler.setAccessEnabler(accessEnabler);
         } else {
-            Log.d("Adobepass", "Failed to configure the AccessEnabler library. ");
+            Log.d(TAG, "Failed to configure the AccessEnabler library. ");
             // finish();
         }
     }
@@ -100,7 +97,7 @@ public class AdobePassLoginHandler {
         accessEnablerHandler.setRequestor(pluginRepository.getPluginConfig().getBaseUrl(),
                 pluginRepository.getPluginConfig().getRequestorID(), itemTitle, itemId);
         accessEnablerHandler.checkAuthentication();
-        reactLoginCallback = callback;
+        reactSession.setReactAuthCallback(callback);
     }
 
     private void handleSetRequestor(Bundle bundle) {
@@ -109,16 +106,16 @@ public class AdobePassLoginHandler {
 
         switch (status) {
             case (AccessEnabler.ACCESS_ENABLER_STATUS_SUCCESS): {
-                Log.d("AdobePass", "Config phase: SUCCESS");
+                Log.d(TAG, "Config phase: SUCCESS");
             }
             break;
             case (AccessEnabler.ACCESS_ENABLER_STATUS_ERROR): {
-                Log.d("AdobePass", "Config phase: FAILED");
+                Log.d(TAG, "Config phase: FAILED");
                 //TODO - Show error message to the user
             }
             break;
             default: {
-                Log.d("AdobePass", "setAuthnStatus(): Unknown status code.");
+                Log.d(TAG, "setAuthnStatus(): Unknown status code.");
                 throw new RuntimeException("setRequestor(): Unknown status code.");
             }
         }
@@ -131,17 +128,17 @@ public class AdobePassLoginHandler {
 
         switch (status) {
             case (AccessEnabler.ACCESS_ENABLER_STATUS_SUCCESS): {
-                Log.d("AdobePass", "Authentication success");
+                Log.d(TAG, "Authentication success");
                 accessEnablerHandler.getAuthorization();
             }
             break;
             case (AccessEnabler.ACCESS_ENABLER_STATUS_ERROR): {
-                Log.d("AdobePass", "Authentication failed: " + errCode);
+                Log.d(TAG, "Authentication failed: " + errCode);
                 accessEnablerHandler.getAuthentication();
             }
             break;
             default: {
-                Log.d("AdobePass", "setAuthnStatus(): Unknown status code.");
+                Log.d(TAG, "setAuthnStatus(): Unknown status code.");
                 throw new RuntimeException("setAuthnStatus(): Unknown status code.");
             }
         }
@@ -150,11 +147,11 @@ public class AdobePassLoginHandler {
     private void handleSetToken(Bundle bundle) {
         String resourceId = bundle.getString("resource_id");
         String token = bundle.getString("token");
-        Log.d(LOG_TAG, "Token: " + token + "resId" + resourceId);
+        Log.d(TAG, "Token: " + token + "resId" + resourceId);
 
         WritableMap callbackParams = new WritableNativeMap();
         callbackParams.putString("token", token);
-        reactLoginCallback.invoke(callbackParams);
+        reactSession.triggerCallbackSuccess(callbackParams);
     }
 
     private void noOps(Bundle bundle) {
@@ -175,12 +172,12 @@ public class AdobePassLoginHandler {
             });
             builder.show();
         }
-        reactLoginCallback.invoke();
+        reactSession.triggerCallbackFail();
     }
 
     private void handleNavigateToUrl(Bundle bundle) {
         String url = bundle.getString("url");
-        if (context != null && url!= null && !url.isEmpty()) {
+        if (context != null && url != null && !url.isEmpty()) {
             Intent intent = new Intent(context, LoginProviderActivity.class);
             intent.putExtra("url", url);
             context.startActivity(intent);
@@ -188,15 +185,21 @@ public class AdobePassLoginHandler {
     }
 
     private void handleMVPDs(Bundle bundle) {
+        List<Mvpd> mvpds = new ArrayList<>();
+        try {
+            mvpds = (ArrayList<Mvpd>) bundle.getSerializable("mvpds");
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to deserialize MVPDs");
+        }
         WritableArray payload = Arguments.createArray();
-        for (Mvpd mvpd : pluginRepository.getMvdpsList()) {
+        for (Mvpd mvpd : mvpds) {
             WritableMap map = new WritableNativeMap();
             map.putString("id", mvpd.getId());
             map.putString("title", mvpd.getDisplayName());
             map.putString("logoURL", mvpd.getLogoUrl());
             payload.pushMap(map);
         }
-        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("showProvidersList", payload);
+        reactSession.emitReactEvent("showProvidersList", payload);
     }
 
     private static class IncomingHandler extends Handler {

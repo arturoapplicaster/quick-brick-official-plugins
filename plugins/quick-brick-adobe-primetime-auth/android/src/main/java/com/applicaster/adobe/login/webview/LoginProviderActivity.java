@@ -3,12 +3,11 @@ package com.applicaster.adobe.login.webview;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.applicaster.adobe.login.R;
+import com.applicaster.adobe.login.ReactSession;
 
 public class LoginProviderActivity extends AppCompatActivity implements LoginFinishCallback {
 
@@ -39,4 +38,9 @@ public class LoginProviderActivity extends AppCompatActivity implements LoginFin
         finish();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        ReactSession.INSTANCE.triggerCallbackFail();
+    }
 }
