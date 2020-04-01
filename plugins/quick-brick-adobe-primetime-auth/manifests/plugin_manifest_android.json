@@ -12,7 +12,7 @@
   "author_email": "d.razumeev@applicaster.com",
   "name": "Adobe Primetime Authentication QuickBrick",
   "description": "Cable Operator Authentication using Adobe Pass Authentication",
-  "type": "general",
+  "type": "login",
   "ui_builder_support": true,
   "screen": true,
   "react_native": true,

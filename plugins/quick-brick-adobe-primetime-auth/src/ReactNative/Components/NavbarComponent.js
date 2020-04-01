@@ -47,6 +47,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'space-around',
+    paddingLeft: 40,
+    paddingRight: 40,
     height: 123
   },
   title: {
@@ -54,6 +56,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   instructions: {
-    marginBottom: 20
+    marginBottom: 20,
+    textAlign: 'center'
   }
 });
