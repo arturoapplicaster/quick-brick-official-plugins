@@ -1,9 +1,8 @@
 //
-//  Counter.swift
-//  AwesomeProject
+//  AdobePrimetimeAuthProvider.swift
+//  AdobeAccessEnablerQB
 //
-//  Created by brel on 3/18/20.
-//  Copyright © 2020 Facebook. All rights reserved.
+//  Created by brel on 3/24/20.
 //
 import React
 import Foundation
@@ -127,7 +126,7 @@ class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, Entitlem
     }
     
     func navigate(toUrl url: String!) {
-        if webLoginViewController != nil {
+        if webLoginViewController != nil || authCompletion == nil  {
             return
         }
         webLoginViewController = WebLoginViewController.instantiateVC()

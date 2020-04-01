@@ -1,10 +1,10 @@
 //
-//  Counter.m
-//  AwesomeProject
+//  AdobePrimetimeAuthProvider.m
+//  AdobeAccessEnablerQB
 //
-//  Created by brel on 3/18/20.
-//  Copyright © 2020 Facebook. All rights reserved.
+//  Created by brel on 3/24/20.
 //
+
 @import React;
 #import <React/RCTEventEmitter.h>
 @interface RCT_EXTERN_REMAP_MODULE(AdobePassContract, AdobePrimetimeAuthProvider, RCTEventEmitter)
