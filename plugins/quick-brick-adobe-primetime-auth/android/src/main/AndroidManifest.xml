@@ -3,7 +3,7 @@
     package="com.applicaster.adobe.login">
 
     <application>
-        <activity android:name=".webview.LoginProviderActivity"></activity>
+        <activity android:name=".webview.LoginProviderActivity"/>
 
         <uses-library
             android:name="org.apache.http.legacy"
