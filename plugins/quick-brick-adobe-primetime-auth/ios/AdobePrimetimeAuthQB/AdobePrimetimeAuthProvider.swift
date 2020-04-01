@@ -158,7 +158,7 @@ class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, Entitlem
             authCompletion = nil
             return
         }
-        authCompletion?([NSNull(), ["token": token]])
+        authCompletion?([["token": token]])
         authCompletion = nil
     }
     
