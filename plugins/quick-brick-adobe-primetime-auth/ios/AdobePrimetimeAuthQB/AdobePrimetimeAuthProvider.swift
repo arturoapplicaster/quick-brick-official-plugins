@@ -75,14 +75,14 @@ class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, Entitlem
                     self.accessEnabler.getAuthorization(stringForAuthorization)
                 }
             } else {
-                finishLoginFlow(false)//authCompletion?(["failed"])
+                finishLoginFlow()
             }
         } else {
             self.userAuthenticated = false
             if code == PROVIDER_NOT_SELECTED_ERROR {
-                finishLoginFlow(false)//(["canceled"])
+                finishLoginFlow()
             } else {
-                finishLoginFlow(false)//(["failed"])
+                finishLoginFlow()
             }
             authCompletion = nil
         }
@@ -96,7 +96,7 @@ class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, Entitlem
             self.authorizedResourceIDs.append(resource)
         }
         if self.authCompletion != nil, self.userAuthenticated {
-            finishLoginFlow(true) //self.authCompletion?(["success"])
+            finishLoginFlow(token)
         }
     }
     
@@ -113,7 +113,7 @@ class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, Entitlem
             let okText = "OK"
             let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: okText, style: .default, handler: { _ in
-                self.finishLoginFlow(false) //["failed"])
+                self.finishLoginFlow()
             }))
             webLoginViewController?.present(alert, animated: true, completion: nil)
         }
@@ -127,10 +127,16 @@ class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, Entitlem
     }
     
     func navigate(toUrl url: String!) {
-        let topViewController = UIViewController.topmostViewController()
+        if webLoginViewController != nil {
+            return
+        }
         webLoginViewController = WebLoginViewController.instantiateVC()
         webLoginViewController?.accessEnabler = accessEnabler
         webLoginViewController?.modalPresentationStyle = .fullScreen
+        webLoginViewController?.cancelAction = { [weak self] in
+            self?.finishLoginFlow()
+        }
+        let topViewController = UIViewController.topmostViewController()
         guard let webLoginViewController = webLoginViewController else {
             return
         }
@@ -140,12 +146,21 @@ class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, Entitlem
         })
     }
     
-    func finishLoginFlow(_ result: Bool) {
+    func dismissWebView() {
         webLoginViewController?.dismiss(animated: true, completion: {
             self.webLoginViewController = nil
         })
-        authCompletion?([NSNull(), ["success": result]])
-        self.authCompletion = nil
+    }
+    
+    func finishLoginFlow(_ token: String? = nil) {
+        dismissWebView()
+        guard let token = token else {
+            authCompletion?([])
+            authCompletion = nil
+            return
+        }
+        authCompletion?([NSNull(), ["token": token]])
+        authCompletion = nil
     }
     
     //MARK:- Unused Delegate methods
