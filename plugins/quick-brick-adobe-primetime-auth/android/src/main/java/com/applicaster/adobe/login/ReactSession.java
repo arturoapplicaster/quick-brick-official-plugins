@@ -12,8 +12,7 @@ public enum ReactSession {
     INSTANCE;
 
     private ReactApplicationContext reactContext;
-    private @Nullable
-    Callback reactAuthCallback;
+    private @Nullable Callback reactAuthCallback;
 
     public void setReactContext(ReactApplicationContext reactContext) {
         this.reactContext = reactContext;

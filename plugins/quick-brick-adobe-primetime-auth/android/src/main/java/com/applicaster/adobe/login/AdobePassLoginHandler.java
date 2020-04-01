@@ -11,6 +11,7 @@ import android.util.Log;
 import com.adobe.adobepass.accessenabler.api.AccessEnabler;
 import com.adobe.adobepass.accessenabler.api.AccessEnablerException;
 import com.adobe.adobepass.accessenabler.models.Mvpd;
+import com.applicaster.adobe.login.pluginconfig.PluginRepository;
 import com.applicaster.adobe.login.webview.LoginProviderActivity;
 import com.applicaster.app.CustomApplication;
 import com.facebook.react.bridge.Arguments;
@@ -59,7 +60,7 @@ class AdobePassLoginHandler {
         this.pluginRepository = pluginRepository;
         this.accessEnablerHandler = accessEnablerHandler;
         this.reactSession = reactSession;
-        this.delegate = new AccessEnablerDelegate(new IncomingHandler(messageHandlers), pluginRepository);
+        this.delegate = new AccessEnablerDelegate(new IncomingHandler(messageHandlers));
     }
 
     void initializeAccessEnabler() {

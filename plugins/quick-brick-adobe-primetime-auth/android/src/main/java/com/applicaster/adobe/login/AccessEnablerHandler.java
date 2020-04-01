@@ -3,7 +3,7 @@ package com.applicaster.adobe.login;
 import android.util.Log;
 
 import com.adobe.adobepass.accessenabler.api.AccessEnabler;
-import com.applicaster.plugin_manager.playersmanager.Playable;
+import com.applicaster.adobe.login.pluginconfig.PluginDataRepository;
 
 import java.util.ArrayList;
 

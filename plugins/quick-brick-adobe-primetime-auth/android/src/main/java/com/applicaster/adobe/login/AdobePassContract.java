@@ -2,7 +2,9 @@ package com.applicaster.adobe.login;
 
 import android.util.Log;
 
-import com.applicaster.adobe.login.mapper.PluginDataMapper;
+import com.applicaster.adobe.login.pluginconfig.mapper.PluginDataMapper;
+import com.applicaster.adobe.login.pluginconfig.PluginDataRepository;
+import com.applicaster.adobe.login.pluginconfig.PluginRepository;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;

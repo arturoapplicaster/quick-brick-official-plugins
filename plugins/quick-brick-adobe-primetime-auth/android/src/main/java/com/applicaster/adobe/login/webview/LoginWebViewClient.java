@@ -7,9 +7,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.applicaster.adobe.login.AccessEnablerHandler;
-import com.applicaster.adobe.login.PluginDataRepository;
+import com.applicaster.adobe.login.pluginconfig.PluginDataRepository;
 import com.applicaster.adobe.login.R;
-import com.applicaster.adobe.login.model.PluginConfig;
+import com.applicaster.adobe.login.pluginconfig.model.PluginConfig;
 
 class LoginWebViewClient extends WebViewClient {
 
