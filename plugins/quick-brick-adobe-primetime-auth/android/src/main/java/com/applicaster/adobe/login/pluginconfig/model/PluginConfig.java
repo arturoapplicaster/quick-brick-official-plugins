@@ -1,7 +1,6 @@
-package com.applicaster.adobe.login.model;
+package com.applicaster.adobe.login.pluginconfig.model;
 
 public class PluginConfig {
-
     private final String baseUrl;
     private final String softwareStatement;
     private final String requestorID;

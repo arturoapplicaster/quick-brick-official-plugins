@@ -26,14 +26,12 @@ import com.adobe.adobepass.accessenabler.models.MetadataStatus;
 import com.adobe.adobepass.accessenabler.models.Mvpd;
 import com.adobe.adobepass.accessenabler.utils.Utils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class AccessEnablerDelegate implements IAccessEnablerDelegate {
     private static final String LOG_TAG = "AccessEnablerDelegate";
 
     private final Handler handler;
-    private final PluginRepository pluginRepository;
 
     public final int SET_REQUESTOR_COMPLETE = 0;
     public final int SET_AUTHN_STATUS = 1;
@@ -46,9 +44,8 @@ public class AccessEnablerDelegate implements IAccessEnablerDelegate {
     public final int SET_METADATA_STATUS = 8;
     public final int PREAUTHORIZED_RESOURCES = 9;
 
-    AccessEnablerDelegate(Handler handler, PluginRepository pluginRepository) {
+    AccessEnablerDelegate(Handler handler) {
         this.handler = handler;
-        this.pluginRepository = pluginRepository;
     }
 
     private Bundle createMessagePayload(int opCode, String message) {
@@ -138,18 +135,7 @@ public class AccessEnablerDelegate implements IAccessEnablerDelegate {
         Message msg = handler.obtainMessage();
         Bundle bundle = createMessagePayload(DISPLAY_PROVIDER_DIALOG, message);
 
-        // serialize the MVPD objects
-        ArrayList<String> serializedData = new ArrayList<String>();
-        for (Mvpd mvpd : mvpds) {
-            try {
-                serializedData.add(mvpd.serialize());
-            } catch (IOException e) {
-                Log.e(LOG_TAG, e.toString());
-            }
-        }
-
-        pluginRepository.setMvdpsList(mvpds);
-
+        bundle.putSerializable("mvpds", mvpds);
         msg.setData(bundle);
         handler.sendMessage(msg);
     }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    used to override default behaviour of opening web view with login-->
+<!--    if 'true' - sdk will call embedded web view-->
+<!--    if 'false' - navigateToUrl will be called by AccessEnablerDelegate-->
+    <bool name="use_cct">false</bool>
+</resources>

@@ -3,7 +3,7 @@ package com.applicaster.adobe.login;
 import android.util.Log;
 
 import com.adobe.adobepass.accessenabler.api.AccessEnabler;
-import com.applicaster.plugin_manager.playersmanager.Playable;
+import com.applicaster.adobe.login.pluginconfig.PluginDataRepository;
 
 import java.util.ArrayList;
 
@@ -35,7 +35,7 @@ public enum AccessEnablerHandler {
                 this.itemId = itemId;
                 accessEnabler.setRequestor(PluginDataRepository.INSTANCE.getPluginConfig().getRequestorID(), spUrls);
             } else {
-                Log.d("Adobepass", "Enter a valid requestor id.");
+                Log.d("AdobePass", "Enter a valid requestor id.");
             }
         }
     }
