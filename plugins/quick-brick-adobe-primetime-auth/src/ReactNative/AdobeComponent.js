@@ -5,8 +5,6 @@ import {
   StyleSheet,
   ActivityIndicator,
   NativeEventEmitter,
-  DeviceEventEmitter,
-  Platform,
   View,
   Alert
 } from 'react-native';
@@ -20,7 +18,8 @@ import {
   goBack,
   setToLocalStorage,
   isTokenInStorage,
-  removeFromLocalStorage
+  removeFromLocalStorage,
+  hideMenu
 } from './Utils';
 
 
@@ -48,15 +47,16 @@ class AdobeComponent extends Component {
   }
 
   componentDidMount() {
-    const { screenData = {} } = this.props;
+    const { screenData = {}, navigator } = this.props;
     this.setState({ loading: true });
-
+    hideMenu(navigator);
     this.initAdobeAccessEnabler(screenData);
     this.startFlow();
   }
 
   componentWillUnmount() {
     this.subscription.remove();
+    this.props.navigator.showNavBar();
   }
 
   initAdobeAccessEnabler = ({ general: data }) => {
@@ -117,16 +117,14 @@ class AdobeComponent extends Component {
     this.accessEnabler.startLoginFlow(additionalParams, this.handleResponseFromLogin);
   };
 
-  handleResponseFromLogin = (response) => {
+  handleResponseFromLogin = async (response) => {
     try {
       this.setState({ loading: true });
 
-      const { callback, payload } = this.props;
-
       if (response && response.token) {
-        setToLocalStorage(response.token, 'idToken');
+        await setToLocalStorage('idToken', response.token);
         this.setState({ loading: false });
-        callback({ success: true, payload });
+        this.successHook();
       } else {
         this.setState({ loading: false });
         this.closeHook();
@@ -154,11 +152,17 @@ class AdobeComponent extends Component {
   };
 
   closeHook = () => {
-    const { callback, payload } = this.props;
-    callback({
-      success: false,
-      payload
-    });
+    const { callback, payload, navigator } = this.props;
+    return callback
+      ? callback({ success: false, payload })
+      : navigator.goBack();
+  };
+
+  successHook = () => {
+    const { callback, payload, navigator } = this.props;
+    return callback
+      ? callback({ success: true, payload })
+      : navigator.goBack();
   };
 
   renderActivityIndicator = () => (

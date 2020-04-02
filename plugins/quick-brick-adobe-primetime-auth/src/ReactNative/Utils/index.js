@@ -82,6 +82,12 @@ async function isTokenInStorage(key, namespace) {
   }
 }
 
+function hideMenu(navigator) {
+  if (navigator.isNavBarVisible) {
+    navigator.hideNavBar();
+  }
+}
+
 export {
   isTriggerOnAppLaunch,
   getPluginData,
@@ -90,5 +96,6 @@ export {
   setToLocalStorage,
   getFromLocalStorage,
   removeFromLocalStorage,
-  isTokenInStorage
+  isTokenInStorage,
+  hideMenu
 };
