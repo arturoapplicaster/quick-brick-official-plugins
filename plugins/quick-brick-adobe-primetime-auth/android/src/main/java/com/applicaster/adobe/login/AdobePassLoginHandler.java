@@ -214,8 +214,10 @@ class AdobePassLoginHandler {
         public void handleMessage(Message msg) {
             Bundle bundle = msg.getData();
             int opCode = bundle.getInt("op_code");
-
-            messageHandlers.get()[opCode].handle(bundle);
+            MessageHandler[] messageHandlers = this.messageHandlers.get();
+            if (messageHandlers != null && opCode < messageHandlers.length) {
+                messageHandlers[opCode].handle(bundle);
+            }
         }
     }
 }

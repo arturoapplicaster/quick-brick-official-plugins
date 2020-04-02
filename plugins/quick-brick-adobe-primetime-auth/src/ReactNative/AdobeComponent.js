@@ -14,7 +14,14 @@ import { connectToStore } from '@applicaster/zapp-react-native-redux';
 import ProvidersList from './Components/ProvidersList';
 import NavbarComponent from './Components/NavbarComponent';
 import { getCustomPluginData, PluginContext } from './Config/PluginData';
-import { isTriggerOnAppLaunch, isHook, goBack } from './Utils';
+import {
+  isTriggerOnAppLaunch,
+  isHook,
+  goBack,
+  setToLocalStorage,
+  isTokenInStorage,
+  removeFromLocalStorage
+} from './Utils';
 
 
 const storeConnector = connectToStore((state) => { // Store connector entity to obtain screen data
@@ -27,11 +34,7 @@ const storeConnector = connectToStore((state) => { // Store connector entity to 
 // Native module that will receive events (login, etc...)
 const adobeAccessEnabler = NativeModules.AdobePassContract;
 // Native module that will send events to RN
-const adobeEventsListener = Platform.select({
-  ios: new NativeEventEmitter(adobeAccessEnabler),
-  android: DeviceEventEmitter
-});
-
+const adobeEventsListener = new NativeEventEmitter(adobeAccessEnabler);
 
 class AdobeComponent extends Component {
   pluginData = getCustomPluginData(this.props.screenData);
@@ -45,11 +48,11 @@ class AdobeComponent extends Component {
   }
 
   componentDidMount() {
-    const { navigator, screenData = {} } = this.props;
+    const { screenData = {} } = this.props;
     this.setState({ loading: true });
 
     this.initAdobeAccessEnabler(screenData);
-    return isHook(navigator) ? this.loginFlow() : this.logoutFlow();
+    this.startFlow();
   }
 
   componentWillUnmount() {
@@ -65,12 +68,24 @@ class AdobeComponent extends Component {
     this.subscription = adobeEventsListener.addListener(
       'showProvidersList',
       (response) => {
-        this.setState({
-          loading: false,
-          dataSource: response
-        });
+        this.setState({ loading: false, dataSource: response });
       }
     );
+  };
+
+  startFlow = async () => {
+    try {
+      const { navigator } = this.props;
+      const isToken = await isTokenInStorage('idToken');
+
+      if (isToken) {
+        return isHook(navigator) ? this.loginFlow() : this.logoutFlow();
+      }
+      return this.loginFlow();
+    } catch (err) {
+      console.log(err);
+      return this.loginFlow();
+    }
   };
 
   logoutFlow = () => {
@@ -78,8 +93,8 @@ class AdobeComponent extends Component {
     const { navigator } = this.props;
 
     Alert.alert(
-      logoutText,
       '',
+      logoutText,
       [
         { text: 'Cancel', onPress: () => goBack(navigator), style: 'cancel' },
         { text: 'OK', onPress: () => this.logOut(navigator) },
@@ -89,12 +104,7 @@ class AdobeComponent extends Component {
   };
 
   loginFlow = () => {
-    const {
-      payload = {},
-      navigator,
-      callback
-    } = this.props;
-
+    const { payload = {}, navigator } = this.props;
     const { title = '', id = '' } = payload;
 
     const additionalParams = {
@@ -104,23 +114,42 @@ class AdobeComponent extends Component {
     };
 
     // startLoginFlow on AccessEnabler
-    this.accessEnabler.startLoginFlow(additionalParams, (error, response) => {
-      const { success } = response;
-      if (success) {
-        callback({
-          success,
-          payload
-        });
-      }
-    });
+    this.accessEnabler.startLoginFlow(additionalParams, this.handleResponseFromLogin);
   };
 
-  logOut = (navigator) => {
-    this.accessEnabler.logout();
-    goBack(navigator);
+  handleResponseFromLogin = (response) => {
+    try {
+      this.setState({ loading: true });
+
+      const { callback, payload } = this.props;
+
+      if (response && response.token) {
+        setToLocalStorage(response.token, 'idToken');
+        this.setState({ loading: false });
+        callback({ success: true, payload });
+      } else {
+        this.setState({ loading: false });
+        this.closeHook();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  logOut = async (navigator) => {
+    try {
+      this.setState({ loading: true });
+      this.accessEnabler.logout();
+      await removeFromLocalStorage('idToken');
+      this.setState({ loading: false });
+      goBack(navigator);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   setProviderID = (id) => {
+    this.setState({ loading: true });
     this.accessEnabler.setProviderID(id);
   };
 

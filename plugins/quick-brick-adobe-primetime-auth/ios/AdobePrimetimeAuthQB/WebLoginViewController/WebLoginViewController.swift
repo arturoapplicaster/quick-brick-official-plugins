@@ -15,6 +15,7 @@ class WebLoginViewController: UIViewController, WKNavigationDelegate {
     var webView = WKWebView()
     let adobePassWebURL = "adobepass://ios.app"
     var accessEnabler: AccessEnabler?
+    var cancelAction: (() -> ())?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +33,7 @@ class WebLoginViewController: UIViewController, WKNavigationDelegate {
     }
     
     @IBAction func cancel(_ sender: Any) {
-        accessEnabler?.setSelectedProvider(nil)
+        cancelAction?()
     }
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: ((WKNavigationActionPolicy) -> Void)) {

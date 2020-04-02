@@ -12,7 +12,7 @@
   "author_email": "ebrel@applicaster.com",
   "name": "Adobe Primetime Authentication QuickBrick",
   "description": "Adobe Access enabler library implementation for use for SSO with TV Providers - supporting Apple SSO and TVE SSO",
-  "type": "general",
+  "type": "login",
   "screen": true,
   "react_native": true,
   "identifier": "adobe-primetime-auth-qb",
@@ -22,7 +22,7 @@
   "unsupported_since_zapp_sdk": "",
   "preload": true,
   "platform": "ios",
-  "dependency_version": "0.0.2",
+  "dependency_version": "0.0.3",
   "manifest_version": "0.0.1",
   "min_zapp_sdk": "20.0.0",
   "general": {

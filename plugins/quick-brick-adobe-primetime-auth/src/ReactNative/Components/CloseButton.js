@@ -3,7 +3,8 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
-  SafeAreaView
+  SafeAreaView,
+  Platform
 } from 'react-native';
 
 
@@ -20,8 +21,16 @@ export default function CloseButton({ closeHook, label }) {
 const styles = StyleSheet.create({
   button: {
     position: 'absolute',
-    left: 30,
-    top: 40,
+    ...Platform.select({
+      android: {
+        left: 20,
+        top: 20,
+      },
+      ios: {
+        left: 20,
+        top: 50,
+      }
+    }),
     zIndex: 1
   },
   buttonText: {
