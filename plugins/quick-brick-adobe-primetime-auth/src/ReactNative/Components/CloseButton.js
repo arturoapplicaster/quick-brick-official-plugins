@@ -27,8 +27,8 @@ const styles = StyleSheet.create({
         top: 20,
       },
       ios: {
-        left: 30,
-        top: 40,
+        left: 20,
+        top: 50,
       }
     }),
     zIndex: 1

@@ -65,7 +65,6 @@ async function removeFromLocalStorage(key, namespace) {
 async function isTokenInStorage(key, namespace) {
   try {
     let token = await getFromLocalStorage(key, namespace);
-    console.log(token, 'toktok');
 
     if (token === null) return false;
 
