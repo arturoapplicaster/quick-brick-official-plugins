@@ -34,11 +34,7 @@ const storeConnector = connectToStore((state) => { // Store connector entity to 
 // Native module that will receive events (login, etc...)
 const adobeAccessEnabler = NativeModules.AdobePassContract;
 // Native module that will send events to RN
-const adobeEventsListener = Platform.select({
-  ios: new NativeEventEmitter(adobeAccessEnabler),
-  android: DeviceEventEmitter
-});
-
+const adobeEventsListener = new NativeEventEmitter(adobeAccessEnabler);
 
 class AdobeComponent extends Component {
   pluginData = getCustomPluginData(this.props.screenData);
@@ -97,8 +93,8 @@ class AdobeComponent extends Component {
     const { navigator } = this.props;
 
     Alert.alert(
-      logoutText,
       '',
+      logoutText,
       [
         { text: 'Cancel', onPress: () => goBack(navigator), style: 'cancel' },
         { text: 'OK', onPress: () => this.logOut(navigator) },
