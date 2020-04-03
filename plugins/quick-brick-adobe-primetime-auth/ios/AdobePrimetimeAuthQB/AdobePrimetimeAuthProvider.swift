@@ -114,7 +114,8 @@ class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, Entitlem
             alert.addAction(UIAlertAction(title: okText, style: .default, handler: { _ in
                 self.finishLoginFlow()
             }))
-            webLoginViewController?.present(alert, animated: true, completion: nil)
+            let topViewController = UIViewController.topmostViewController()
+            topViewController?.present(alert, animated: true, completion: nil)
         }
     }
     
