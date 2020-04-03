@@ -105,7 +105,7 @@ class AdobeComponent extends Component {
 
   loginFlow = () => {
     const { payload = {}, navigator } = this.props;
-    const { title = '', id = '' } = payload;
+    const { title = 'N/A', id = 'N/A' } = payload;
 
     const additionalParams = {
       isTriggerOnAppLaunch: isTriggerOnAppLaunch(navigator),
