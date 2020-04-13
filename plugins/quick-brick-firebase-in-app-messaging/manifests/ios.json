@@ -1,19 +1,21 @@
-
 {
-  "api": {},
-  "author_name": "Roman Karpievich",
-  "author_email": "karpievich@applicaster.com",
-  "manifest_version": "0.0.1",
+  "api": {
+      "require_startup_execution": true,
+      "class_name": "FirebaseInAppMessageUniversalLinks.FirebaseInAppMessageUniversalLinks",
+      "modules": []
+  },
+  "author_name": "Egor Brel",
+  "author_email": "ebrel@applicaster.com",
+  "dependency_version": "0.2.0",
+  "manifest_version": "0.2.0",
   "platform": "ios",
   "name": "Firebase In-App Messaging",
   "description": "This plugin adds firebase in-app messaging dependency to your native project",
   "identifier": "firebase-in-app-messaging",
-
   "extra_dependencies": [
     {
-      "Firebase": "",
-      "Firebase/InAppMessaging": "",
-      "Firebase/Analytics": ""
+      "FirebaseInAppMessageUniversalLinks": ":path => './quick_brick/node_modules/@applicaster/quick-brick-firebase-in-app-messaging/ios/FirebaseInAppMessageUniversalLinks.podspec'"
+      "Firebase/InAppMessaging": ""
     }
   ],
   "type": "general",
