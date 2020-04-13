@@ -1,6 +1,5 @@
 package com.applicaster.adobe.login;
 
-import android.telecom.Call;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -52,15 +51,5 @@ public enum ReactSession {
             reactLogoutCallback.invoke();
             reactLogoutCallback = null;
         }
-    }
-
-    @Nullable
-    public Callback getReactAuthCallback() {
-        return reactAuthCallback;
-    }
-
-    @Nullable
-    public Callback getReactLogoutCallback() {
-        return reactLogoutCallback;
     }
 }
