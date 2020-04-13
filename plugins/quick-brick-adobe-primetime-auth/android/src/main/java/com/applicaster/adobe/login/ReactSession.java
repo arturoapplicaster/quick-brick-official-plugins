@@ -1,5 +1,7 @@
 package com.applicaster.adobe.login;
 
+import android.telecom.Call;
+
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
@@ -13,6 +15,7 @@ public enum ReactSession {
 
     private ReactApplicationContext reactContext;
     private @Nullable Callback reactAuthCallback;
+    private @Nullable Callback reactLogoutCallback;
 
     public void setReactContext(ReactApplicationContext reactContext) {
         this.reactContext = reactContext;
@@ -20,6 +23,10 @@ public enum ReactSession {
 
     public void setReactAuthCallback(@Nullable Callback reactAuthCallback) {
         this.reactAuthCallback = reactAuthCallback;
+    }
+
+    public void setReactLogoutCallback(@Nullable Callback reactLogoutCallback) {
+        this.reactLogoutCallback = reactLogoutCallback;
     }
 
     public void emitReactEvent(String eventName, WritableArray payload) {
@@ -38,5 +45,22 @@ public enum ReactSession {
             reactAuthCallback.invoke();
             reactAuthCallback = null;
         }
+    }
+
+    public void triggerLogoutSuccess() {
+        if (reactLogoutCallback != null) {
+            reactLogoutCallback.invoke();
+            reactLogoutCallback = null;
+        }
+    }
+
+    @Nullable
+    public Callback getReactAuthCallback() {
+        return reactAuthCallback;
+    }
+
+    @Nullable
+    public Callback getReactLogoutCallback() {
+        return reactLogoutCallback;
     }
 }
