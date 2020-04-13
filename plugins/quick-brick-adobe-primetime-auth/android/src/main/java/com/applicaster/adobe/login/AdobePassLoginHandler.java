@@ -196,20 +196,25 @@ class AdobePassLoginHandler {
     private void handleNavigateToUrl(Bundle bundle) {
         final String url = bundle.getString("url");
         if (context != null && url != null && !url.isEmpty()) {
-            if (reactSession.getReactAuthCallback() != null) {
-                Intent intent = new Intent(context, LoginProviderActivity.class);
-                intent.putExtra("url", url);
-                context.startActivity(intent);
-            } else {
-                new Handler(Looper.getMainLooper()).post(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                LogoutProvider logoutProvider = new LogoutProvider();
-                                logoutProvider.startLogout(context, url);
+            switch (accessEnablerHandler.getFlow()) {
+                case LOGIN:
+                    Intent intent = new Intent(context, LoginProviderActivity.class);
+                    intent.putExtra("url", url);
+                    context.startActivity(intent);
+                    break;
+                case LOGOUT:
+                    new Handler(Looper.getMainLooper()).post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    LogoutProvider logoutProvider = new LogoutProvider();
+                                    logoutProvider.startLogout(context, url);
+                                }
                             }
-                        }
-                );
+                    );
+                    break;
+                default:
+                    break;
             }
         }
     }
