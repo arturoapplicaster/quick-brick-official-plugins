@@ -7,59 +7,52 @@
 import React
 import Foundation
 import AccessEnabler
+import ZappCore
+
+enum AdobeFlow {
+    case login
+    case logout
+    case none
+}
 
 @objc(AdobePrimetimeAuthProvider)
 class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, EntitlementStatus {
-    static let shared = AdobePrimetimeAuthProvider()
+    
+    var flow = AdobeFlow.none
     var webLoginViewController: WebLoginViewController?
+    var pluginConfig: [String: String]?
     var additionalParameters: [String: Any]?
     var accessEnabler = AccessEnabler()
     var resourceID: String?
-    // User authenticated in adobe access enabler
-    var userAuthenticated = false
-    // Tokens dictionary - keys are the resource IDs
-    var tokensDictionary: [String:String] = [:]
-    // Authorized resource
-    var authorizedResourceIDs: [String] = []
-    // Authorization flow completion
     var authCompletion: RCTResponseSenderBlock?
-    
+
     @objc func setupAccessEnabler(_ pluginConfig: [String: String]) {
-       accessEnabler = AccessEnabler(pluginConfig["software_statement"] ?? "")
-       accessEnabler.delegate = self
-       accessEnabler.statusDelegate = self
-       var providers = [String]()
-       if let url = pluginConfig["base_url"] {
-           providers.append(url)
-       }
-       accessEnabler.setRequestor(pluginConfig["requestor_id"] ?? "")
-       self.resourceID = pluginConfig["resource_id"]
+        self.pluginConfig = pluginConfig
+        accessEnabler = AccessEnabler(pluginConfig["software_statement"] ?? "")
+        accessEnabler.delegate = self
+        accessEnabler.statusDelegate = self
+        accessEnabler.setRequestor(pluginConfig["requestor_id"] ?? "")
+        self.resourceID = pluginConfig["resource_id"]
     }
     
     @objc func startLoginFlow(_ additionalParameters: [String: Any], callback: @escaping RCTResponseSenderBlock) {
+        flow = .login
         self.authCompletion = callback
         self.additionalParameters = additionalParameters
-        if self.userAuthenticated {
-            if let stringForAuthorization = getResourceStringForAuthorization() {
-                self.accessEnabler.getAuthorization(stringForAuthorization)
-            }
-        } else {
-            self.accessEnabler.getAuthentication()
-        }
+        self.accessEnabler.checkAuthentication()
     }
     
-    @objc func logout() {
-       self.userAuthenticated = false
-       self.tokensDictionary = [:]
-       self.authorizedResourceIDs = []
-       self.accessEnabler.logout()
-       // Delete cookies from UIWebView as well in case someone clicked remember me
-       let cookieStorage = HTTPCookieStorage.shared
-       if let cookies = cookieStorage.cookies {
-           for cookie in cookies {
-               cookieStorage.deleteCookie(cookie as HTTPCookie)
-           }
-       }
+    @objc func logout(_ callback: @escaping RCTResponseSenderBlock) {
+        flow = .logout
+        self.authCompletion = callback
+        self.accessEnabler.logout()
+        let cookieStorage = HTTPCookieStorage.shared
+        if let cookies = cookieStorage.cookies {
+            for cookie in cookies {
+                cookieStorage.deleteCookie(cookie as HTTPCookie)
+            }
+        }
+        accessEnabler.checkAuthentication()
     }
     
     @objc func setProviderID(_ providerID: String) {
@@ -67,52 +60,37 @@ class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, Entitlem
     }
     
     func setAuthenticationStatus(_ status: Int32, errorCode code: String!) {
-        if status == ACCESS_ENABLER_STATUS_SUCCESS {
-            self.userAuthenticated = true
-            if self.resourceID != nil {
-                if let stringForAuthorization = getResourceStringForAuthorization() {
-                    self.accessEnabler.getAuthorization(stringForAuthorization)
-                }
+        switch status {
+        case ACCESS_ENABLER_STATUS_SUCCESS:
+            _ = FacadeConnector.connector?.storage?.localStorageSetValue(for: "idToken", value: "authToken", namespace: nil)
+            if let stringForAuthorization = getResourceStringForAuthorization() {
+                self.accessEnabler.getAuthorization(stringForAuthorization)
             } else {
-                finishLoginFlow()
+                finishFlow()
             }
-        } else {
-            self.userAuthenticated = false
-            if code == PROVIDER_NOT_SELECTED_ERROR {
-                finishLoginFlow()
+        case ACCESS_ENABLER_STATUS_ERROR:
+            if code == USER_NOT_AUTHENTICATED_ERROR && flow == .logout {
+                _ = FacadeConnector.connector?.storage?.localStorageSetValue(for: "idToken", value: "\"{}\"", namespace: nil)
+                finishFlow()
             } else {
-                finishLoginFlow()
+                accessEnabler.getAuthentication()
             }
-            authCompletion = nil
+        default:
+            break
         }
     }
     
     func setToken(_ token: String!, forResource resource: String!) {
-        guard let itemID = additionalParameters?["itemID"] as? String else { return }
-        if let token = token,
-            let resource = resource {
-            self.tokensDictionary[itemID] = token
-            self.authorizedResourceIDs.append(resource)
-        }
-        if self.authCompletion != nil, self.userAuthenticated {
-            finishLoginFlow(token)
-        }
-    }
-    
-    func preauthorizedResources(_ resources: [Any]!) {
-        if let resourceStringsArray = resources as? [String] {
-            authorizedResourceIDs.append(contentsOf: resourceStringsArray)
-        }
+        finishFlow(token)
     }
     
     func tokenRequestFailed(_ resource: String!, errorCode code: String!, errorDescription description: String!) {
-        userAuthenticated = false
-        if self.authCompletion != nil {
+        if flow == .login {
             let message = "This content is not included in your package"
             let okText = "OK"
             let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: okText, style: .default, handler: { _ in
-                self.finishLoginFlow()
+                self.finishFlow()
             }))
             let topViewController = UIViewController.topmostViewController()
             topViewController?.present(alert, animated: true, completion: nil)
@@ -127,23 +105,15 @@ class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, Entitlem
     }
     
     func navigate(toUrl url: String!) {
-        if webLoginViewController != nil || authCompletion == nil  {
-            return
+        if flow == .login  {
+            webLoginViewController = WebLoginViewController.instantiateVC()
+            webLoginViewController?.accessEnabler = accessEnabler
+            webLoginViewController?.modalPresentationStyle = .fullScreen
+            webLoginViewController?.cancelAction = { [weak self] in
+                self?.finishFlow()
+            }
+            showWebView(url: url)
         }
-        webLoginViewController = WebLoginViewController.instantiateVC()
-        webLoginViewController?.accessEnabler = accessEnabler
-        webLoginViewController?.modalPresentationStyle = .fullScreen
-        webLoginViewController?.cancelAction = { [weak self] in
-            self?.finishLoginFlow()
-        }
-        let topViewController = UIViewController.topmostViewController()
-        guard let webLoginViewController = webLoginViewController else {
-            return
-        }
-        topViewController?.present(webLoginViewController, animated: true, completion: {
-            guard let url = URL(string: url) else {return}
-            webLoginViewController.webView.load(URLRequest(url: url))
-        })
     }
     
     func dismissWebView() {
@@ -152,15 +122,26 @@ class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, Entitlem
         })
     }
     
-    func finishLoginFlow(_ token: String? = nil) {
-        dismissWebView()
-        guard let token = token else {
-            authCompletion?([])
-            authCompletion = nil
+    func showWebView(url: String) {
+        guard let viewController = webLoginViewController else {
             return
         }
-        authCompletion?([["token": token]])
+        let topViewController = UIViewController.topmostViewController()
+        topViewController?.present(viewController, animated: true, completion: {
+            guard let url = URL(string: url) else {return}
+            viewController.webView.load(URLRequest(url: url))
+        })
+    }
+    
+    func finishFlow(_ token: String? = nil) {
+        dismissWebView()
+        if flow == .login {
+            token == nil ? authCompletion?([]) : authCompletion?([["token": token]])
+        } else {
+            authCompletion?([])
+        }
         authCompletion = nil
+        flow = .none
     }
     
     //MARK:- Unused Delegate methods
@@ -190,6 +171,10 @@ class AdobePrimetimeAuthProvider: RCTEventEmitter, EntitlementDelegate, Entitlem
     }
     
     func status(_ statusDictionary: [AnyHashable : Any]!) {
+        //empty
+    }
+    
+    func preauthorizedResources(_ resources: [Any]!) {
         //empty
     }
     
