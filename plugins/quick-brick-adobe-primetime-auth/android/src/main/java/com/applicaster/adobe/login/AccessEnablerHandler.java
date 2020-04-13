@@ -78,7 +78,7 @@ public enum AccessEnablerHandler {
 
     public void logout(Callback callback) {
         if (accessEnabler != null) {
-            ReactSession.INSTANCE.setReactLogoutCallback(callback);
+            ReactSession.INSTANCE.setReactAuthCallback(callback);
             accessEnabler.logout();
         }
     }

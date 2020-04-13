@@ -14,7 +14,6 @@ public enum ReactSession {
 
     private ReactApplicationContext reactContext;
     private @Nullable Callback reactAuthCallback;
-    private @Nullable Callback reactLogoutCallback;
 
     public void setReactContext(ReactApplicationContext reactContext) {
         this.reactContext = reactContext;
@@ -22,10 +21,6 @@ public enum ReactSession {
 
     public void setReactAuthCallback(@Nullable Callback reactAuthCallback) {
         this.reactAuthCallback = reactAuthCallback;
-    }
-
-    public void setReactLogoutCallback(@Nullable Callback reactLogoutCallback) {
-        this.reactLogoutCallback = reactLogoutCallback;
     }
 
     public void emitReactEvent(String eventName, WritableArray payload) {
@@ -43,13 +38,6 @@ public enum ReactSession {
         if (reactAuthCallback != null) {
             reactAuthCallback.invoke();
             reactAuthCallback = null;
-        }
-    }
-
-    public void triggerLogoutSuccess() {
-        if (reactLogoutCallback != null) {
-            reactLogoutCallback.invoke();
-            reactLogoutCallback = null;
         }
     }
 }

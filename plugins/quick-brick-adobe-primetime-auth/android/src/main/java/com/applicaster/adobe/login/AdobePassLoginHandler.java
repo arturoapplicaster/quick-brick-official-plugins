@@ -147,7 +147,7 @@ class AdobePassLoginHandler {
                         && accessEnablerHandler.getFlow() == Flow.LOGOUT) {
                     LocalStorage.INSTANCE.set("idToken", "\"{}\"");
                     accessEnablerHandler.setFlow(Flow.UNDEFINED);
-                    reactSession.triggerLogoutSuccess();
+                    reactSession.triggerCallbackSuccess(new WritableNativeMap());
                     Log.d(TAG, "User was successfully logged out");
                 } else {
                     accessEnablerHandler.getAuthentication();
