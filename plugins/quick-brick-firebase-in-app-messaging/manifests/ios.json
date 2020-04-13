@@ -6,6 +6,7 @@
   },
   "author_name": "Egor Brel",
   "author_email": "ebrel@applicaster.com",
+  "dependency_name": "@applicaster/quick-brick-firebase-in-app-messaging",
   "dependency_version": "0.2.0",
   "manifest_version": "0.2.0",
   "platform": "ios",
@@ -14,7 +15,7 @@
   "identifier": "firebase-in-app-messaging",
   "extra_dependencies": [
     {
-      "FirebaseInAppMessageUniversalLinks": ":path => './quick_brick/node_modules/@applicaster/quick-brick-firebase-in-app-messaging/ios/FirebaseInAppMessageUniversalLinks.podspec'"
+      "FirebaseInAppMessageUniversalLinks": ":path => './quick_brick/node_modules/@applicaster/quick-brick-firebase-in-app-messaging/ios/FirebaseInAppMessageUniversalLinks.podspec'",
       "Firebase/InAppMessaging": ""
     }
   ],
